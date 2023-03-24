@@ -18,7 +18,7 @@ public interface OpenidLoginServiceRepositorySet {
 
     UserLoginStateRepository<UserLoginState> getUserLoginStateRepository();
 
-    SessionRepository<UserSession> getSessionRepository();
+    UserSessionRepository<UserSession> getUserSessionRepository();
 
-    SessionIdGeneratorRepository getSessionIdGeneratorRepository();
+    UserSessionIdGeneratorRepository getUserSessionIdGeneratorRepository();
 }

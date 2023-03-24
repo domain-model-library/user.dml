@@ -24,8 +24,8 @@ public class OpenidLoginService {
         UserIdGeneratorRepository userIdGeneratorRepository = repositorySet.getUserIdGeneratorRepository();
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
         UserLoginStateRepository<UserLoginState> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
-        SessionRepository<UserSession> sessionRepository = repositorySet.getSessionRepository();
-        SessionIdGeneratorRepository sessionIdGeneratorRepository = repositorySet.getSessionIdGeneratorRepository();
+        UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
+        UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = repositorySet.getUserSessionIdGeneratorRepository();
 
         OpenidLoginResult result = new OpenidLoginResult();
 
@@ -57,12 +57,12 @@ public class OpenidLoginService {
         UserLoginState userLoginState = userLoginStateRepository.takeOrPutIfAbsent(newUserLoginState.getId(), newUserLoginState);
         UserSession currentUserSession = userLoginState.getCurrentUserSession();
         if (currentUserSession != null) {
-            UserSession removedUserSession = sessionRepository.remove(currentUserSession.getId());
+            UserSession removedUserSession = userSessionRepository.remove(currentUserSession.getId());
             result.setRemovedUserSession(removedUserSession);
         }
-        IdGenerator<String> sessionIdGenerator = sessionIdGeneratorRepository.take();
+        IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
         newUserSession.setId(sessionIdGenerator.generateId());
-        sessionRepository.put(newUserSession);
+        userSessionRepository.put(newUserSession);
 
         userLoginState.setCurrentUserSession(newUserSession);
 
