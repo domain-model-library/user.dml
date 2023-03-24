@@ -23,7 +23,7 @@ public class OpenidLoginService {
         OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = repositorySet.getOpenIdUserBindRepository();
         UserIdGeneratorRepository userIdGeneratorRepository = repositorySet.getUserIdGeneratorRepository();
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
-        UserLoginStateRepository<UserLoginState> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = repositorySet.getUserSessionIdGeneratorRepository();
 

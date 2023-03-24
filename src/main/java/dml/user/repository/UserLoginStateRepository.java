@@ -5,5 +5,5 @@ import dml.user.entity.UserLoginState;
 /**
  * @author zheng chengdong
  */
-public interface UserLoginStateRepository<E extends UserLoginState> extends CommonEntityRepository<E, Object> {
+public interface UserLoginStateRepository<E extends UserLoginState, ID> extends CommonEntityRepository<E, ID> {
 }

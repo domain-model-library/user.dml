@@ -48,7 +48,7 @@ public class Login {
         UserIdGeneratorRepository userIdGeneratorRepository = TestSingletonRepository.instance(UserIdGeneratorRepository.class,
                 new LongIdGenerator(1L));
         UserRepository<User, Object> userRepository = TestRepository.instance(UserRepository.class);
-        UserLoginStateRepository<UserLoginState> userLoginStateRepository = TestRepository.instance(UserLoginStateRepository.class);
+        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = TestRepository.instance(UserLoginStateRepository.class);
         UserSessionRepository<UserSession> userSessionRepository = TestRepository.instance(UserSessionRepository.class);
         UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = TestSingletonRepository.instance(UserSessionIdGeneratorRepository.class,
                 new UUIDGenerator());
@@ -69,7 +69,7 @@ public class Login {
         }
 
         @Override
-        public UserLoginStateRepository<UserLoginState> getUserLoginStateRepository() {
+        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
             return userLoginStateRepository;
         }
 
