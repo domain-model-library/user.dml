@@ -3,7 +3,7 @@ package dml.user.entity;
 /**
  * @author zheng chengdong
  */
-public interface Session {
+public interface UserSession {
     String getId();
 
     void setId(String id);

@@ -1,7 +1,7 @@
 package dml.user.service.result;
 
-import dml.user.entity.Session;
 import dml.user.entity.User;
+import dml.user.entity.UserSession;
 
 /**
  * @author zheng chengdong
@@ -9,8 +9,8 @@ import dml.user.entity.User;
 public class OpenidLoginResult {
     private User user;
     private boolean createNewUser;
-    private Session currentSession;
-    private Session removedSession;
+    private UserSession currentUserSession;
+    private UserSession removedUserSession;
 
     public User getUser() {
         return user;
@@ -28,19 +28,19 @@ public class OpenidLoginResult {
         this.createNewUser = createNewUser;
     }
 
-    public Session getCurrentSession() {
-        return currentSession;
+    public UserSession getCurrentUserSession() {
+        return currentUserSession;
     }
 
-    public void setCurrentSession(Session currentSession) {
-        this.currentSession = currentSession;
+    public void setCurrentUserSession(UserSession currentUserSession) {
+        this.currentUserSession = currentUserSession;
     }
 
-    public Session getRemovedSession() {
-        return removedSession;
+    public UserSession getRemovedUserSession() {
+        return removedUserSession;
     }
 
-    public void setRemovedSession(Session removedSession) {
-        this.removedSession = removedSession;
+    public void setRemovedUserSession(UserSession removedUserSession) {
+        this.removedUserSession = removedUserSession;
     }
 }

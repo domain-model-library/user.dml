@@ -8,7 +8,7 @@ public interface UserLoginState {
 
     Object getId();
 
-    Session getCurrentSession();
+    UserSession getCurrentUserSession();
 
-    void setCurrentSession(Session currentSession);
+    void setCurrentUserSession(UserSession currentUserSession);
 }

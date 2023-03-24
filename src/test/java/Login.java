@@ -3,9 +3,9 @@ import dml.id.entity.UUIDGenerator;
 import dml.test.repository.TestRepository;
 import dml.test.repository.TestSingletonRepository;
 import dml.user.entity.OpenIdUserBind;
-import dml.user.entity.Session;
 import dml.user.entity.User;
 import dml.user.entity.UserLoginState;
+import dml.user.entity.UserSession;
 import dml.user.repository.*;
 import dml.user.service.OpenidLoginService;
 import dml.user.service.repositoryset.OpenidLoginServiceRepositorySet;
@@ -31,7 +31,7 @@ public class Login {
                 new TestUserLoginState());
         assertTrue(openidLoginResult1.isCreateNewUser());
         assertNotNull(openidLoginResult1.getUser());
-        assertNotNull(openidLoginResult1.getCurrentSession());
+        assertNotNull(openidLoginResult1.getCurrentUserSession());
 
         OpenidLoginResult openidLoginResult2 = OpenidLoginService.openidLogin(openidLoginServiceRepositorySet,
                 openId1,
@@ -40,7 +40,7 @@ public class Login {
                 new TestOpenIdUserBind(),
                 new TestUserLoginState());
         assertFalse(openidLoginResult2.isCreateNewUser());
-        assertEquals(openidLoginResult1.getCurrentSession().getId(), openidLoginResult2.getRemovedSession().getId());
+        assertEquals(openidLoginResult1.getCurrentUserSession().getId(), openidLoginResult2.getRemovedUserSession().getId());
     }
 
     OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet = new OpenidLoginServiceRepositorySet() {
@@ -49,7 +49,7 @@ public class Login {
                 new LongIdGenerator(1L));
         UserRepository<User, Object> userRepository = TestRepository.instance(UserRepository.class);
         UserLoginStateRepository<UserLoginState> userLoginStateRepository = TestRepository.instance(UserLoginStateRepository.class);
-        SessionRepository<Session> sessionRepository = TestRepository.instance(SessionRepository.class);
+        SessionRepository<UserSession> sessionRepository = TestRepository.instance(SessionRepository.class);
         SessionIdGeneratorRepository sessionIdGeneratorRepository = TestSingletonRepository.instance(SessionIdGeneratorRepository.class,
                 new UUIDGenerator());
 
@@ -74,7 +74,7 @@ public class Login {
         }
 
         @Override
-        public SessionRepository<Session> getSessionRepository() {
+        public SessionRepository<UserSession> getSessionRepository() {
             return sessionRepository;
         }
 
@@ -100,7 +100,7 @@ public class Login {
         }
     }
 
-    class TestSession implements Session {
+    class TestSession implements UserSession {
         String id;
 
         @Override
@@ -136,7 +136,7 @@ public class Login {
 
     class TestUserLoginState implements UserLoginState {
         long id;
-        Session currentSession;
+        UserSession currentUserSession;
 
         @Override
         public void setId(Object id) {
@@ -149,13 +149,13 @@ public class Login {
         }
 
         @Override
-        public Session getCurrentSession() {
-            return currentSession;
+        public UserSession getCurrentUserSession() {
+            return currentUserSession;
         }
 
         @Override
-        public void setCurrentSession(Session currentSession) {
-            this.currentSession = currentSession;
+        public void setCurrentUserSession(UserSession currentUserSession) {
+            this.currentUserSession = currentUserSession;
         }
     }
 }
