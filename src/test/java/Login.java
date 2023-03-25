@@ -1,5 +1,6 @@
 import dml.id.entity.LongIdGenerator;
 import dml.id.entity.UUIDGenerator;
+import dml.id.entity.UUIDStyleRandomStringIdGenerator;
 import dml.test.repository.TestRepository;
 import dml.test.repository.TestSingletonRepository;
 import dml.user.entity.OpenIdUserBind;
@@ -51,7 +52,7 @@ public class Login {
         UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = TestRepository.instance(UserLoginStateRepository.class);
         UserSessionRepository<UserSession> userSessionRepository = TestRepository.instance(UserSessionRepository.class);
         UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = TestSingletonRepository.instance(UserSessionIdGeneratorRepository.class,
-                new UUIDGenerator());
+                new UUIDStyleRandomStringIdGenerator());
 
         @Override
         public OpenIdUserBindRepository<OpenIdUserBind> getOpenIdUserBindRepository() {
