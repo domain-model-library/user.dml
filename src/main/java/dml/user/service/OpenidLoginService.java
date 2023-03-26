@@ -62,11 +62,29 @@ public class OpenidLoginService {
         }
         IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
         newUserSession.setId(sessionIdGenerator.generateId());
+        newUserSession.setUser(openIdUserBind.getUser());
         userSessionRepository.put(newUserSession);
 
         userLoginState.setCurrentUserSession(newUserSession);
 
         result.setCurrentUserSession(newUserSession);
         return result;
+    }
+
+    public static UserSession logout(OpenidLoginServiceRepositorySet repositorySet,
+                                     String token) {
+
+        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
+
+        UserSession userSession = userSessionRepository.remove(token);
+        if (userSession == null) {
+            return null;
+        }
+
+        UserLoginState userLoginState = userLoginStateRepository.take(userSession.getUser().getId());
+        userLoginState.setCurrentUserSession(null);
+
+        return userSession;
     }
 }

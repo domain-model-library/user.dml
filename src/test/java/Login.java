@@ -1,5 +1,4 @@
 import dml.id.entity.LongIdGenerator;
-import dml.id.entity.UUIDGenerator;
 import dml.id.entity.UUIDStyleRandomStringIdGenerator;
 import dml.test.repository.TestRepository;
 import dml.test.repository.TestSingletonRepository;
@@ -103,6 +102,7 @@ public class Login {
 
     class TestSession implements UserSession {
         String id;
+        User user;
 
         @Override
         public String getId() {
@@ -112,6 +112,16 @@ public class Login {
         @Override
         public void setId(String id) {
             this.id = id;
+        }
+
+        @Override
+        public void setUser(User user) {
+            this.user = user;
+        }
+
+        @Override
+        public User getUser() {
+            return user;
         }
     }
 
