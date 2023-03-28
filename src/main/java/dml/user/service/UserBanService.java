@@ -21,4 +21,11 @@ public class UserBanService {
         userBanRepository.remove(userId);
     }
 
+    public static boolean checkBan(UserBanServiceRepositorySet repositorySet,
+                                   Object userId) {
+        UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
+        UserBan userBan = userBanRepository.find(userId);
+        return userBan != null;
+    }
+
 }
