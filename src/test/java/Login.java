@@ -7,7 +7,9 @@ import dml.user.entity.User;
 import dml.user.entity.UserLoginState;
 import dml.user.entity.UserSession;
 import dml.user.repository.*;
+import dml.user.service.KickLoginService;
 import dml.user.service.OpenidLoginService;
+import dml.user.service.repositoryset.KickLoginServiceRepositorySet;
 import dml.user.service.repositoryset.OpenidLoginServiceRepositorySet;
 import dml.user.service.result.OpenidLoginResult;
 import org.junit.Test;
@@ -27,31 +29,38 @@ public class Login {
                 openId1,
                 new TestUser(),
                 new TestSession(),
-                new TestOpenIdUserBind(),
-                new TestUserLoginState());
+                new TestOpenIdUserBind());
         assertTrue(openidLoginResult1.isCreateNewUser());
         assertNotNull(openidLoginResult1.getUser());
-        assertNotNull(openidLoginResult1.getCurrentUserSession());
+        assertNotNull(openidLoginResult1.getNewUserSession());
+        String kickedSessionId1 = KickLoginService.newLoginKickOldLogin(kickLoginServiceRepositorySet,
+                openidLoginResult1.getNewUserSession().getId(),
+                new TestUserLoginState());
+        assertNull(kickedSessionId1);
 
         OpenidLoginResult openidLoginResult2 = OpenidLoginService.openidLogin(openidLoginServiceRepositorySet,
                 openId1,
                 new TestUser(),
                 new TestSession(),
-                new TestOpenIdUserBind(),
+                new TestOpenIdUserBind());
+        String kickedSessionId2 = KickLoginService.newLoginKickOldLogin(kickLoginServiceRepositorySet,
+                openidLoginResult2.getNewUserSession().getId(),
                 new TestUserLoginState());
         assertFalse(openidLoginResult2.isCreateNewUser());
-        assertEquals(openidLoginResult1.getCurrentUserSession().getId(), openidLoginResult2.getRemovedUserSession().getId());
+        assertEquals(openidLoginResult1.getNewUserSession().getId(), kickedSessionId2);
     }
 
+    OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);
+    UserIdGeneratorRepository userIdGeneratorRepository = TestSingletonRepository.instance(UserIdGeneratorRepository.class,
+            new LongIdGenerator(1L));
+    UserRepository<User, Object> userRepository = TestRepository.instance(UserRepository.class);
+    UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = TestRepository.instance(UserLoginStateRepository.class);
+    UserSessionRepository<UserSession> userSessionRepository = TestRepository.instance(UserSessionRepository.class);
+    UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = TestSingletonRepository.instance(UserSessionIdGeneratorRepository.class,
+            new UUIDStyleRandomStringIdGenerator());
+
     OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet = new OpenidLoginServiceRepositorySet() {
-        OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);
-        UserIdGeneratorRepository userIdGeneratorRepository = TestSingletonRepository.instance(UserIdGeneratorRepository.class,
-                new LongIdGenerator(1L));
-        UserRepository<User, Object> userRepository = TestRepository.instance(UserRepository.class);
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = TestRepository.instance(UserLoginStateRepository.class);
-        UserSessionRepository<UserSession> userSessionRepository = TestRepository.instance(UserSessionRepository.class);
-        UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = TestSingletonRepository.instance(UserSessionIdGeneratorRepository.class,
-                new UUIDStyleRandomStringIdGenerator());
+
 
         @Override
         public OpenIdUserBindRepository<OpenIdUserBind> getOpenIdUserBindRepository() {
@@ -69,11 +78,6 @@ public class Login {
         }
 
         @Override
-        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
-            return userLoginStateRepository;
-        }
-
-        @Override
         public UserSessionRepository<UserSession> getUserSessionRepository() {
             return userSessionRepository;
         }
@@ -81,6 +85,19 @@ public class Login {
         @Override
         public UserSessionIdGeneratorRepository getUserSessionIdGeneratorRepository() {
             return userSessionIdGeneratorRepository;
+        }
+    };
+
+    KickLoginServiceRepositorySet kickLoginServiceRepositorySet = new KickLoginServiceRepositorySet() {
+
+        @Override
+        public UserSessionRepository<UserSession> getUserSessionRepository() {
+            return userSessionRepository;
+        }
+
+        @Override
+        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
+            return userLoginStateRepository;
         }
     };
 

@@ -9,8 +9,7 @@ import dml.user.entity.UserSession;
 public class OpenidLoginResult {
     private User user;
     private boolean createNewUser;
-    private UserSession currentUserSession;
-    private UserSession removedUserSession;
+    private UserSession newUserSession;
 
     public User getUser() {
         return user;
@@ -28,19 +27,11 @@ public class OpenidLoginResult {
         this.createNewUser = createNewUser;
     }
 
-    public UserSession getCurrentUserSession() {
-        return currentUserSession;
+    public UserSession getNewUserSession() {
+        return newUserSession;
     }
 
-    public void setCurrentUserSession(UserSession currentUserSession) {
-        this.currentUserSession = currentUserSession;
-    }
-
-    public UserSession getRemovedUserSession() {
-        return removedUserSession;
-    }
-
-    public void setRemovedUserSession(UserSession removedUserSession) {
-        this.removedUserSession = removedUserSession;
+    public void setNewUserSession(UserSession newUserSession) {
+        this.newUserSession = newUserSession;
     }
 }
