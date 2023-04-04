@@ -64,7 +64,7 @@ public class OpenidLoginService {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
 
-        return userSessionRepository.remove(token);
+        return SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
     }
-    
+
 }
