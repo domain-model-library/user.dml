@@ -15,10 +15,10 @@ public class UserBanService {
         userBanRepository.put(newUserBan);
     }
 
-    public static void liftBan(UserBanServiceRepositorySet repositorySet,
-                               Object userId) {
+    public static UserBan liftBan(UserBanServiceRepositorySet repositorySet,
+                                  Object userId) {
         UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
-        userBanRepository.remove(userId);
+        return userBanRepository.remove(userId);
     }
 
     public static boolean checkBan(UserBanServiceRepositorySet repositorySet,

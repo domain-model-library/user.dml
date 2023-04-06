@@ -1,7 +1,9 @@
 package dml.user.service;
 
 import dml.user.entity.AutoLiftTime;
+import dml.user.entity.UserBan;
 import dml.user.repository.AutoLiftTimeRepository;
+import dml.user.repository.UserBanRepository;
 import dml.user.service.repositoryset.UserBanAutoLiftServiceRepositorySet;
 
 /**
@@ -17,13 +19,16 @@ public class UserBanAutoLiftService {
         autoLiftTimeRepository.put(newAutoLiftTime);
     }
 
-    public static AutoLiftTime checkAndLift(UserBanAutoLiftServiceRepositorySet repositorySet,
-                                            Object userId,
-                                            long currentTime) {
+    public static UserBan checkAndLift(UserBanAutoLiftServiceRepositorySet repositorySet,
+                                       Object userId,
+                                       long currentTime) {
         AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
+        UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
+
         AutoLiftTime autoLiftTime = autoLiftTimeRepository.take(userId);
         if (autoLiftTime.timeToLift(currentTime)) {
-            return autoLiftTimeRepository.remove(autoLiftTime.getId());
+            autoLiftTimeRepository.remove(autoLiftTime.getId());
+            return userBanRepository.remove(autoLiftTime.getId());
         }
         return null;
     }
