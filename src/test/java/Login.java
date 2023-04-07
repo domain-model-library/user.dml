@@ -6,6 +6,7 @@ import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.*;
 import dml.user.service.repositoryset.*;
+import dml.user.service.result.CheckBanAndLiftResult;
 import dml.user.service.result.OpenidLoginResult;
 import org.junit.Test;
 
@@ -92,6 +93,23 @@ public class Login {
                 user1.getId());
         assertFalse(isBan2);
 
+        UserAutoLiftBanService.banUser(userAutoLiftBanServiceRepositorySet,
+                user1.getId(),
+                new TestUserAutoLiftBan(currentTime + 60 * 1000L));
+        
+        currentTime += (30 * 1000L);
+
+        CheckBanAndLiftResult checkBanAndLiftResult1 = UserAutoLiftBanService.checkBanAndLift(userAutoLiftBanServiceRepositorySet,
+                user1.getId(),
+                currentTime);
+        assertTrue(checkBanAndLiftResult1.isBanned());
+
+        currentTime += (31 * 1000L);
+
+        CheckBanAndLiftResult checkBanAndLiftResult2 = UserAutoLiftBanService.checkBanAndLift(userAutoLiftBanServiceRepositorySet,
+                user1.getId(),
+                currentTime);
+        assertFalse(checkBanAndLiftResult2.isBanned());
     }
 
     OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);
@@ -104,6 +122,7 @@ public class Login {
             new UUIDStyleRandomStringIdGenerator());
     UserBanRepository<UserBan, Object> userBanRepository = TestRepository.instance(UserBanRepository.class);
     AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = TestRepository.instance(AutoLiftTimeRepository.class);
+    UserAutoLiftBanRepository<UserAutoLiftBan, Object> userAutoLiftBanRepository = TestRepository.instance(UserAutoLiftBanRepository.class);
 
     OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet = new OpenidLoginServiceRepositorySet() {
 
@@ -183,6 +202,13 @@ public class Login {
         @Override
         public UserSessionRepository<UserSession> getUserSessionRepository() {
             return userSessionRepository;
+        }
+    };
+
+    UserAutoLiftBanServiceRepositorySet userAutoLiftBanServiceRepositorySet = new UserAutoLiftBanServiceRepositorySet() {
+        @Override
+        public UserAutoLiftBanRepository<UserAutoLiftBan, Object> getUserAutoLiftBanRepository() {
+            return userAutoLiftBanRepository;
         }
     };
 
@@ -299,5 +325,23 @@ public class Login {
         }
 
 
+    }
+
+    class TestUserAutoLiftBan extends UserAutoLiftBanBase {
+        long id;
+
+        public TestUserAutoLiftBan(long liftTime) {
+            this.liftTime = liftTime;
+        }
+
+        @Override
+        public void setId(Object id) {
+            this.id = (long) id;
+        }
+
+        @Override
+        public Object getId() {
+            return id;
+        }
     }
 }
