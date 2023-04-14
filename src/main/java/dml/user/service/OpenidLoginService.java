@@ -50,12 +50,11 @@ public class OpenidLoginService {
 
         result.setUser(openIdUserBind.getUser());
 
-        IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
-        newUserSession.setId(sessionIdGenerator.generateId());
-        newUserSession.setUser(openIdUserBind.getUser());
-        userSessionRepository.put(newUserSession);
-
-        result.setNewUserSession(newUserSession);
+        result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIdGeneratorRepository,
+                userSessionRepository,
+                newUserSession,
+                openIdUserBind.getUser()));
+        
         return result;
     }
 
