@@ -48,13 +48,11 @@ public class OpenidLoginService {
             result.setCreateNewUser(false);
         }
 
-        result.setUser(openIdUserBind.getUser());
-
         result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIdGeneratorRepository,
                 userSessionRepository,
                 newUserSession,
                 openIdUserBind.getUser()));
-        
+
         return result;
     }
 

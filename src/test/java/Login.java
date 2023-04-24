@@ -29,7 +29,7 @@ public class Login {
                 new TestSession(),
                 new TestOpenIdUserBind());
         assertTrue(openidLoginResult1.isCreateNewUser());
-        assertNotNull(openidLoginResult1.getUser());
+        assertNotNull(openidLoginResult1.getNewUserSession().getUser());
         assertNotNull(openidLoginResult1.getNewUserSession());
         String kickedSessionId1 = KickLoginService.newLoginKickOldLogin(kickLoginServiceRepositorySet,
                 openidLoginResult1.getNewUserSession().getId(),
@@ -39,7 +39,7 @@ public class Login {
         long currentTime = System.currentTimeMillis();
         User user1 = AuthService.auth(authServiceRepositorySet,
                 openidLoginResult1.getNewUserSession().getId());
-        assertEquals(openidLoginResult1.getUser().getId(), user1.getId());
+        assertEquals(openidLoginResult1.getNewUserSession().getUser().getId(), user1.getId());
 
         OpenidLoginResult openidLoginResult2 = OpenidLoginService.openidLogin(openidLoginServiceRepositorySet,
                 openId1,
@@ -126,6 +126,10 @@ public class Login {
                 "pass1",
                 new TestSession());
         assertTrue(accountPasswordLoginResult1.isLoginSuccess());
+
+        User user1 = AuthService.auth(authServiceRepositorySet,
+                accountPasswordLoginResult1.getNewUserSession().getId());
+        assertEquals(accountPasswordLoginResult1.getNewUserSession().getUser().getId(), user1.getId());
     }
 
     OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);
