@@ -6,8 +6,10 @@ import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.*;
 import dml.user.service.repositoryset.*;
+import dml.user.service.result.AccountPasswordLoginResult;
 import dml.user.service.result.CheckBanAndLiftResult;
 import dml.user.service.result.OpenidLoginResult;
+import dml.user.service.result.RegisterNewUserResult;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -96,7 +98,7 @@ public class Login {
         UserAutoLiftBanService.banUser(userAutoLiftBanServiceRepositorySet,
                 user1.getId(),
                 new TestUserAutoLiftBan(currentTime + 60 * 1000L));
-        
+
         currentTime += (30 * 1000L);
 
         CheckBanAndLiftResult checkBanAndLiftResult1 = UserAutoLiftBanService.checkBanAndLift(userAutoLiftBanServiceRepositorySet,
@@ -112,6 +114,20 @@ public class Login {
         assertFalse(checkBanAndLiftResult2.isBanned());
     }
 
+    @Test
+    public void accountIdLogin() {
+        RegisterNewUserResult registerNewUserResult1 = AccountLoginService.registerNewUser(accountLoginServiceSet,
+                new TestUserAccount("account1", "pass1"),
+                new TestUser());
+        assertFalse(registerNewUserResult1.isAccountExists());
+
+        AccountPasswordLoginResult accountPasswordLoginResult1 = AccountLoginService.accountPasswordLogin(accountLoginServiceSet,
+                "account1",
+                "pass1",
+                new TestSession());
+        assertTrue(accountPasswordLoginResult1.isLoginSuccess());
+    }
+
     OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);
     UserIdGeneratorRepository userIdGeneratorRepository = TestSingletonRepository.instance(UserIdGeneratorRepository.class,
             new LongIdGenerator(1L));
@@ -123,6 +139,34 @@ public class Login {
     UserBanRepository<UserBan, Object> userBanRepository = TestRepository.instance(UserBanRepository.class);
     AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = TestRepository.instance(AutoLiftTimeRepository.class);
     UserAutoLiftBanRepository<UserAutoLiftBan, Object> userAutoLiftBanRepository = TestRepository.instance(UserAutoLiftBanRepository.class);
+    UserAccountRepository<UserAccount> userAccountRepository = TestRepository.instance(UserAccountRepository.class);
+
+    AccountLoginServiceSet accountLoginServiceSet = new AccountLoginServiceSet() {
+        @Override
+        public UserAccountRepository<UserAccount> getUserAccountRepository() {
+            return userAccountRepository;
+        }
+
+        @Override
+        public UserSessionRepository<UserSession> getUserSessionRepository() {
+            return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionIdGeneratorRepository getUserSessionIdGeneratorRepository() {
+            return userSessionIdGeneratorRepository;
+        }
+
+        @Override
+        public UserIdGeneratorRepository getUserIdGeneratorRepository() {
+            return userIdGeneratorRepository;
+        }
+
+        @Override
+        public UserRepository<User, Object> getUserRepository() {
+            return userRepository;
+        }
+    };
 
     OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet = new OpenidLoginServiceRepositorySet() {
 
@@ -230,7 +274,7 @@ public class Login {
 
     class TestSession implements UserSession {
         String id;
-        User user;
+        TestUser user;
 
         @Override
         public String getId() {
@@ -244,7 +288,7 @@ public class Login {
 
         @Override
         public void setUser(User user) {
-            this.user = user;
+            this.user = (TestUser) user;
         }
 
         @Override
@@ -255,7 +299,7 @@ public class Login {
 
     class TestOpenIdUserBind implements OpenIdUserBind {
         String id;
-        User user;
+        TestUser user;
 
         @Override
         public void setId(String id) {
@@ -264,7 +308,7 @@ public class Login {
 
         @Override
         public void setUser(User user) {
-            this.user = user;
+            this.user = (TestUser) user;
         }
 
         @Override
@@ -343,5 +387,26 @@ public class Login {
         public Object getId() {
             return id;
         }
+    }
+
+    class TestUserAccount extends UserAccountBase {
+        String id;
+        TestUser user;
+
+        public TestUserAccount(String account, String password) {
+            this.id = account;
+            this.password = password;
+        }
+
+        @Override
+        public User getUser() {
+            return user;
+        }
+
+        @Override
+        public void setUser(User user) {
+            this.user = (TestUser) user;
+        }
+
     }
 }

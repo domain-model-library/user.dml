@@ -1,12 +1,12 @@
 package dml.user.service;
 
+import dml.user.entity.User;
 import dml.user.entity.UserAccount;
 import dml.user.entity.UserSession;
-import dml.user.repository.UserAccountRepository;
-import dml.user.repository.UserSessionIdGeneratorRepository;
-import dml.user.repository.UserSessionRepository;
+import dml.user.repository.*;
 import dml.user.service.repositoryset.AccountLoginServiceSet;
 import dml.user.service.result.AccountPasswordLoginResult;
+import dml.user.service.result.RegisterNewUserResult;
 
 /**
  * @author zheng chengdong
@@ -40,6 +40,29 @@ public class AccountLoginService {
 
         result.setLoginSuccess(true);
 
+        return result;
+    }
+
+    public static RegisterNewUserResult registerNewUser(AccountLoginServiceSet repositorySet,
+                                                        UserAccount newUserAccount,
+                                                        User newUser) {
+
+        UserAccountRepository<UserAccount> userAccountRepository = repositorySet.getUserAccountRepository();
+        UserIdGeneratorRepository userIdGeneratorRepository = repositorySet.getUserIdGeneratorRepository();
+        UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
+
+        RegisterNewUserResult result = new RegisterNewUserResult();
+
+        UserAccount existsUserAccount = userAccountRepository.putIfAbsent(newUserAccount);
+        if (existsUserAccount != null) {
+            result.setAccountExists(true);
+            return result;
+        }
+
+        newUser.setId(userIdGeneratorRepository.take().generateId());
+        userRepository.put(newUser);
+        newUserAccount.setUser(newUser);
+        result.setNewUser(newUser);
         return result;
     }
 }
