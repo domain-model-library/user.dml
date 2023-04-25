@@ -6,10 +6,7 @@ import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.*;
 import dml.user.service.repositoryset.*;
-import dml.user.service.result.AccountPasswordLoginResult;
-import dml.user.service.result.CheckBanAndLiftResult;
-import dml.user.service.result.OpenidLoginResult;
-import dml.user.service.result.RegisterNewUserResult;
+import dml.user.service.result.*;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -130,6 +127,30 @@ public class Login {
         User user1 = AuthService.auth(authServiceRepositorySet,
                 accountPasswordLoginResult1.getNewUserSession().getId());
         assertEquals(accountPasswordLoginResult1.getNewUserSession().getUser().getId(), user1.getId());
+
+        AccountLoginService.logout(accountLoginServiceSet,
+                accountPasswordLoginResult1.getNewUserSession().getId());
+
+        User user2 = AuthService.auth(authServiceRepositorySet,
+                accountPasswordLoginResult1.getNewUserSession().getId());
+        assertNull(user2);
+
+        AccountPasswordKickLoginResult accountPasswordKickLoginResult1 = AccountLoginService.accountPasswordKickLogin(accountLoginServiceSet,
+                kickLoginServiceRepositorySet,
+                "account1",
+                "pass1",
+                new TestSession(),
+                new TestUserLoginState());
+        AccountPasswordKickLoginResult accountPasswordKickLoginResult2 = AccountLoginService.accountPasswordKickLogin(accountLoginServiceSet,
+                kickLoginServiceRepositorySet,
+                "account1",
+                "pass1",
+                new TestSession(),
+                new TestUserLoginState());
+        User user3 = AuthService.auth(authServiceRepositorySet,
+                accountPasswordKickLoginResult1.getNewUserSession().getId());
+        assertNull(user3);
+
     }
 
     OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);

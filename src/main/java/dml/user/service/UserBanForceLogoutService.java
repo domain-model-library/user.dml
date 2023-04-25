@@ -25,7 +25,9 @@ public class UserBanForceLogoutService {
             return null;
         }
 
-        return SharedBusinessMethodsBetweenServices.logout(userSessionRepository, userSession.getId());
+        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, userSession.getId());
+        userLoginState.setCurrentUserSession(null);
+        return removedUserSession;
     }
 
 }
