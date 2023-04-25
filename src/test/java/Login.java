@@ -151,6 +151,17 @@ public class Login {
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
         assertNull(user3);
 
+        AccountLoginService.logoutAndUpdateState(accountLoginServiceSet,
+                kickLoginServiceRepositorySet,
+                accountPasswordKickLoginResult2.getNewUserSession().getId());
+        AccountPasswordKickLoginResult accountPasswordKickLoginResult3 = AccountLoginService.accountPasswordKickLogin(accountLoginServiceSet,
+                kickLoginServiceRepositorySet,
+                "account1",
+                "pass1",
+                new TestSession(),
+                new TestUserLoginState());
+        assertNull(accountPasswordKickLoginResult3.getRemovedUserSessionId());
+
     }
 
     OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);
