@@ -65,4 +65,12 @@ public class AccountLoginService {
         result.setNewUser(newUser);
         return result;
     }
+
+    public static UserSession logout(AccountLoginServiceSet repositorySet,
+                                     String token) {
+
+        UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
+
+        return SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
+    }
 }
