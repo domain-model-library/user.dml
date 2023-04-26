@@ -3,9 +3,12 @@ package dml.user.service;
 import dml.id.entity.IdGenerator;
 import dml.user.entity.OpenIdUserBind;
 import dml.user.entity.User;
+import dml.user.entity.UserLoginState;
 import dml.user.entity.UserSession;
 import dml.user.repository.*;
+import dml.user.service.repositoryset.KickLoginServiceRepositorySet;
 import dml.user.service.repositoryset.OpenidLoginServiceRepositorySet;
+import dml.user.service.result.OpenidKickLoginResult;
 import dml.user.service.result.OpenidLoginResult;
 
 /**
@@ -62,6 +65,48 @@ public class OpenidLoginService {
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
 
         return SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
+    }
+
+    public static OpenidKickLoginResult openidKickLogin(OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet,
+                                                        KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+                                                        String openid,
+                                                        User newUser,
+                                                        UserSession newUserSession,
+                                                        OpenIdUserBind newOpenIdUserBind,
+                                                        UserLoginState newUserLoginState) {
+
+        OpenidKickLoginResult result = new OpenidKickLoginResult();
+
+        OpenidLoginResult openidLoginResult = openidLogin(openidLoginServiceRepositorySet,
+                openid,
+                newUser,
+                newUserSession,
+                newOpenIdUserBind);
+
+        String removedUserSessionId = KickLoginService.newLoginKickOldLogin(kickLoginServiceRepositorySet,
+                openidLoginResult.getNewUserSession().getId(),
+                newUserLoginState);
+        result.setLoginResult(openidLoginResult);
+        result.setRemovedUserSessionId(removedUserSessionId);
+
+        return result;
+
+    }
+
+    public static UserSession logoutAndUpdateStateForNewLoginKick(OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet,
+                                                                  KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+                                                                  String token) {
+
+        UserSession removedUserSession = logout(openidLoginServiceRepositorySet,
+                token);
+        if (removedUserSession == null) {
+            return null;
+        }
+
+        KickLoginService.setLoggedOut(kickLoginServiceRepositorySet,
+                removedUserSession.getUser().getId());
+        return removedUserSession;
+
     }
 
 }
