@@ -101,9 +101,9 @@ public class AccountLoginService {
         return result;
     }
 
-    public static UserSession logoutAndUpdateState(AccountLoginServiceSet accountLoginServiceSet,
-                                                   KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
-                                                   String token) {
+    public static UserSession logoutAndUpdateStateForNewLoginKick(AccountLoginServiceSet accountLoginServiceSet,
+                                                                  KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+                                                                  String token) {
 
         UserSession removedUserSession = logout(accountLoginServiceSet, token);
         if (removedUserSession == null) {

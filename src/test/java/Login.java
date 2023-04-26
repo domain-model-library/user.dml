@@ -151,7 +151,7 @@ public class Login {
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
         assertNull(user3);
 
-        AccountLoginService.logoutAndUpdateState(accountLoginServiceSet,
+        AccountLoginService.logoutAndUpdateStateForNewLoginKick(accountLoginServiceSet,
                 kickLoginServiceRepositorySet,
                 accountPasswordKickLoginResult2.getNewUserSession().getId());
         AccountPasswordKickLoginResult accountPasswordKickLoginResult3 = AccountLoginService.accountPasswordKickLogin(accountLoginServiceSet,
