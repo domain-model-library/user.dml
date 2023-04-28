@@ -8,7 +8,11 @@ import dml.user.entity.UserSession;
 import dml.user.repository.*;
 import dml.user.service.repositoryset.KickLoginServiceRepositorySet;
 import dml.user.service.repositoryset.OpenidLoginServiceRepositorySet;
+import dml.user.service.repositoryset.UserBanAutoLiftServiceRepositorySet;
+import dml.user.service.repositoryset.UserBanServiceRepositorySet;
+import dml.user.service.result.CheckBanAndAutoLiftResult;
 import dml.user.service.result.OpenidKickLoginResult;
+import dml.user.service.result.OpenidKickLoginWithAutoLiftBanResult;
 import dml.user.service.result.OpenidLoginResult;
 
 /**
@@ -106,6 +110,43 @@ public class OpenidLoginService {
         KickLoginService.setLoggedOut(kickLoginServiceRepositorySet,
                 removedUserSession.getUser().getId());
         return removedUserSession;
+
+    }
+
+    public static OpenidKickLoginWithAutoLiftBanResult openidKickLoginWithAutoLiftBan(OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet,
+                                                                                      KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+                                                                                      UserBanServiceRepositorySet userBanServiceRepositorySet,
+                                                                                      UserBanAutoLiftServiceRepositorySet userBanAutoLiftServiceRepositorySet,
+                                                                                      String openid,
+                                                                                      User newUser,
+                                                                                      UserSession newUserSession,
+                                                                                      OpenIdUserBind newOpenIdUserBind,
+                                                                                      UserLoginState newUserLoginState,
+                                                                                      long currentTime) {
+
+        OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = openidLoginServiceRepositorySet.getOpenIdUserBindRepository();
+
+        OpenidKickLoginWithAutoLiftBanResult result = new OpenidKickLoginWithAutoLiftBanResult();
+
+        OpenIdUserBind openIdUserBind = openIdUserBindRepository.find(openid);
+        CheckBanAndAutoLiftResult checkBanAndAutoLiftResult = UserBanService.checkBanAndAutoLift(userBanServiceRepositorySet,
+                userBanAutoLiftServiceRepositorySet,
+                openIdUserBind.getUser().getId(),
+                currentTime);
+        result.setCheckBanAndAutoLiftResult(checkBanAndAutoLiftResult);
+        if (checkBanAndAutoLiftResult.isBanned()) {
+            return result;
+        }
+
+        OpenidKickLoginResult openidKickLoginResult = openidKickLogin(openidLoginServiceRepositorySet,
+                kickLoginServiceRepositorySet,
+                openid,
+                newUser,
+                newUserSession,
+                newOpenIdUserBind,
+                newUserLoginState);
+        result.setOpenidKickLoginResult(openidKickLoginResult);
+        return result;
 
     }
 

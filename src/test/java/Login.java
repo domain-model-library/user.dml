@@ -6,7 +6,10 @@ import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.*;
 import dml.user.service.repositoryset.*;
-import dml.user.service.result.*;
+import dml.user.service.result.AccountPasswordKickLoginResult;
+import dml.user.service.result.AccountPasswordLoginResult;
+import dml.user.service.result.OpenidLoginResult;
+import dml.user.service.result.RegisterNewUserResult;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -77,14 +80,14 @@ public class Login {
         boolean isBan1 = UserBanService.checkBan(userBanServiceRepositorySet,
                 user1.getId());
         assertTrue(isBan1);
-        UserBan userBan1 = UserBanAutoLiftService.checkAndLift(userBanAutoLiftServiceRepositorySet,
+        UserBan userBan1 = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(userBanAutoLiftServiceRepositorySet,
                 user1.getId(),
                 currentTime);
         assertNull(userBan1);
 
         currentTime += (31 * 1000L);
 
-        UserBan userBan2 = UserBanAutoLiftService.checkAndLift(userBanAutoLiftServiceRepositorySet,
+        UserBan userBan2 = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(userBanAutoLiftServiceRepositorySet,
                 user1.getId(),
                 currentTime);
         assertNotNull(userBan2);
