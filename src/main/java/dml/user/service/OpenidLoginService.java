@@ -6,10 +6,10 @@ import dml.user.entity.User;
 import dml.user.entity.UserLoginState;
 import dml.user.entity.UserSession;
 import dml.user.repository.*;
-import dml.user.service.repositoryset.KickLoginServiceRepositorySet;
+import dml.user.service.repositoryset.OpenidKickLoginRepositorySet;
+import dml.user.service.repositoryset.OpenidKickLoginWithAutoLiftBanRepositorySet;
 import dml.user.service.repositoryset.OpenidLoginServiceRepositorySet;
-import dml.user.service.repositoryset.UserBanAutoLiftServiceRepositorySet;
-import dml.user.service.repositoryset.UserBanServiceRepositorySet;
+import dml.user.service.repositoryset.OpenidLogoutAndUpdateStateForNewLoginKickRepositorySet;
 import dml.user.service.result.CheckBanAndAutoLiftResult;
 import dml.user.service.result.OpenidKickLoginResult;
 import dml.user.service.result.OpenidKickLoginWithAutoLiftBanResult;
@@ -71,8 +71,7 @@ public class OpenidLoginService {
         return SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
     }
 
-    public static OpenidKickLoginResult openidKickLogin(OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet,
-                                                        KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+    public static OpenidKickLoginResult openidKickLogin(OpenidKickLoginRepositorySet repositorySet,
                                                         String openid,
                                                         User newUser,
                                                         UserSession newUserSession,
@@ -81,13 +80,13 @@ public class OpenidLoginService {
 
         OpenidKickLoginResult result = new OpenidKickLoginResult();
 
-        OpenidLoginResult openidLoginResult = openidLogin(openidLoginServiceRepositorySet,
+        OpenidLoginResult openidLoginResult = openidLogin(repositorySet,
                 openid,
                 newUser,
                 newUserSession,
                 newOpenIdUserBind);
 
-        String removedUserSessionId = KickLoginService.newLoginKickOldLogin(kickLoginServiceRepositorySet,
+        String removedUserSessionId = KickLoginService.newLoginKickOldLogin(repositorySet,
                 openidLoginResult.getNewUserSession().getId(),
                 newUserLoginState);
         result.setLoginResult(openidLoginResult);
@@ -97,26 +96,22 @@ public class OpenidLoginService {
 
     }
 
-    public static UserSession logoutAndUpdateStateForNewLoginKick(OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet,
-                                                                  KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+    public static UserSession logoutAndUpdateStateForNewLoginKick(OpenidLogoutAndUpdateStateForNewLoginKickRepositorySet repositorySet,
                                                                   String token) {
 
-        UserSession removedUserSession = logout(openidLoginServiceRepositorySet,
+        UserSession removedUserSession = logout(repositorySet,
                 token);
         if (removedUserSession == null) {
             return null;
         }
 
-        KickLoginService.setLoggedOut(kickLoginServiceRepositorySet,
+        KickLoginService.setLoggedOut(repositorySet,
                 removedUserSession.getUser().getId());
         return removedUserSession;
 
     }
 
-    public static OpenidKickLoginWithAutoLiftBanResult openidKickLoginWithAutoLiftBan(OpenidLoginServiceRepositorySet openidLoginServiceRepositorySet,
-                                                                                      KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
-                                                                                      UserBanServiceRepositorySet userBanServiceRepositorySet,
-                                                                                      UserBanAutoLiftServiceRepositorySet userBanAutoLiftServiceRepositorySet,
+    public static OpenidKickLoginWithAutoLiftBanResult openidKickLoginWithAutoLiftBan(OpenidKickLoginWithAutoLiftBanRepositorySet repositorySet,
                                                                                       String openid,
                                                                                       User newUser,
                                                                                       UserSession newUserSession,
@@ -124,13 +119,12 @@ public class OpenidLoginService {
                                                                                       UserLoginState newUserLoginState,
                                                                                       long currentTime) {
 
-        OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = openidLoginServiceRepositorySet.getOpenIdUserBindRepository();
+        OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = repositorySet.getOpenIdUserBindRepository();
 
         OpenidKickLoginWithAutoLiftBanResult result = new OpenidKickLoginWithAutoLiftBanResult();
 
         OpenIdUserBind openIdUserBind = openIdUserBindRepository.find(openid);
-        CheckBanAndAutoLiftResult checkBanAndAutoLiftResult = UserBanService.checkBanAndAutoLift(userBanServiceRepositorySet,
-                userBanAutoLiftServiceRepositorySet,
+        CheckBanAndAutoLiftResult checkBanAndAutoLiftResult = UserBanService.checkBanAndAutoLift(repositorySet,
                 openIdUserBind.getUser().getId(),
                 currentTime);
         result.setCheckBanAndAutoLiftResult(checkBanAndAutoLiftResult);
@@ -138,8 +132,7 @@ public class OpenidLoginService {
             return result;
         }
 
-        OpenidKickLoginResult openidKickLoginResult = openidKickLogin(openidLoginServiceRepositorySet,
-                kickLoginServiceRepositorySet,
+        OpenidKickLoginResult openidKickLoginResult = openidKickLogin(repositorySet,
                 openid,
                 newUser,
                 newUserSession,

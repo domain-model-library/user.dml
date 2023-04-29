@@ -38,7 +38,7 @@ public class UserBanAutoLiftService {
             result.setAutoLiftTime(autoLiftTime);
             return result;
         }
-        return null;
+        return result;
     }
 
     public static AutoLiftTime removeAutoLiftTime(UserBanAutoLiftServiceRepositorySet repositorySet,

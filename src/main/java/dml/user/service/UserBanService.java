@@ -3,7 +3,9 @@ package dml.user.service;
 import dml.user.entity.AutoLiftTime;
 import dml.user.entity.UserBan;
 import dml.user.repository.UserBanRepository;
-import dml.user.service.repositoryset.UserBanAutoLiftServiceRepositorySet;
+import dml.user.service.repositoryset.BanUserWithAutoLiftRepositorySet;
+import dml.user.service.repositoryset.CheckBanAndAutoLiftRepositorySet;
+import dml.user.service.repositoryset.LiftAutoLiftBanRepositorySet;
 import dml.user.service.repositoryset.UserBanServiceRepositorySet;
 import dml.user.service.result.CheckAutoLiftTimeAndLiftBanResult;
 import dml.user.service.result.CheckBanAndAutoLiftResult;
@@ -34,34 +36,32 @@ public class UserBanService {
     }
 
 
-    public static void banUserWithAutoLift(UserBanServiceRepositorySet userBanServiceRepositorySet,
-                                           UserBanAutoLiftServiceRepositorySet userBanAutoLiftServiceRepositorySet,
+    public static void banUserWithAutoLift(BanUserWithAutoLiftRepositorySet repositorySet,
                                            Object userId,
                                            UserBan newUserBan,
                                            AutoLiftTime newAutoLiftTime) {
 
-        banUser(userBanServiceRepositorySet,
+        banUser(repositorySet,
                 userId,
                 newUserBan);
 
-        UserBanAutoLiftService.setAutoLiftTime(userBanAutoLiftServiceRepositorySet,
+        UserBanAutoLiftService.setAutoLiftTime(repositorySet,
                 userId,
                 newAutoLiftTime);
     }
 
-    public static LiftAutoLiftBanResult liftAutoLiftBan(UserBanServiceRepositorySet userBanServiceRepositorySet,
-                                                        UserBanAutoLiftServiceRepositorySet userBanAutoLiftServiceRepositorySet,
+    public static LiftAutoLiftBanResult liftAutoLiftBan(LiftAutoLiftBanRepositorySet repositorySet,
                                                         Object userId) {
 
         LiftAutoLiftBanResult result = new LiftAutoLiftBanResult();
 
-        UserBan userBan = liftBan(userBanServiceRepositorySet,
+        UserBan userBan = liftBan(repositorySet,
                 userId);
         if (userBan == null) {
             return result;
         }
 
-        AutoLiftTime autoLiftTime = UserBanAutoLiftService.removeAutoLiftTime(userBanAutoLiftServiceRepositorySet,
+        AutoLiftTime autoLiftTime = UserBanAutoLiftService.removeAutoLiftTime(repositorySet,
                 userId);
 
         result.setUserBan(userBan);
@@ -69,20 +69,19 @@ public class UserBanService {
         return result;
     }
 
-    public static CheckBanAndAutoLiftResult checkBanAndAutoLift(UserBanServiceRepositorySet userBanServiceRepositorySet,
-                                                                UserBanAutoLiftServiceRepositorySet userBanAutoLiftServiceRepositorySet,
+    public static CheckBanAndAutoLiftResult checkBanAndAutoLift(CheckBanAndAutoLiftRepositorySet repositorySet,
                                                                 Object userId,
                                                                 long currentTime) {
 
         CheckBanAndAutoLiftResult result = new CheckBanAndAutoLiftResult();
 
-        boolean banned = checkBan(userBanServiceRepositorySet,
+        boolean banned = checkBan(repositorySet,
                 userId);
         if (!banned) {
             return result;
         }
 
-        CheckAutoLiftTimeAndLiftBanResult checkAutoLiftTimeAndLiftBanResult = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(userBanAutoLiftServiceRepositorySet,
+        CheckAutoLiftTimeAndLiftBanResult checkAutoLiftTimeAndLiftBanResult = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(repositorySet,
                 userId,
                 currentTime);
         if (checkAutoLiftTimeAndLiftBanResult.isLiftSuccess()) {

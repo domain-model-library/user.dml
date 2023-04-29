@@ -6,7 +6,8 @@ import dml.user.entity.UserLoginState;
 import dml.user.entity.UserSession;
 import dml.user.repository.*;
 import dml.user.service.repositoryset.AccountLoginServiceSet;
-import dml.user.service.repositoryset.KickLoginServiceRepositorySet;
+import dml.user.service.repositoryset.AccountLogoutAndUpdateStateForNewLoginKickRepositorySet;
+import dml.user.service.repositoryset.AccountPasswordKickLoginRepositorySet;
 import dml.user.service.result.AccountPasswordKickLoginResult;
 import dml.user.service.result.AccountPasswordLoginResult;
 import dml.user.service.result.RegisterNewUserResult;
@@ -77,15 +78,14 @@ public class AccountLoginService {
         return SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
     }
 
-    public static AccountPasswordKickLoginResult accountPasswordKickLogin(AccountLoginServiceSet accountLoginServiceSet,
-                                                                          KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+    public static AccountPasswordKickLoginResult accountPasswordKickLogin(AccountPasswordKickLoginRepositorySet repositorySet,
                                                                           String account,
                                                                           String password,
                                                                           UserSession newUserSession,
                                                                           UserLoginState newUserLoginState) {
 
         AccountPasswordKickLoginResult result = new AccountPasswordKickLoginResult();
-        AccountPasswordLoginResult accountPasswordLoginResult = accountPasswordLogin(accountLoginServiceSet,
+        AccountPasswordLoginResult accountPasswordLoginResult = accountPasswordLogin(repositorySet,
                 account,
                 password,
                 newUserSession);
@@ -94,25 +94,25 @@ public class AccountLoginService {
             return result;
         }
 
-        String removedUserSessionId = KickLoginService.newLoginKickOldLogin(kickLoginServiceRepositorySet,
+        String removedUserSessionId = KickLoginService.newLoginKickOldLogin(repositorySet,
                 accountPasswordLoginResult.getNewUserSession().getId(),
                 newUserLoginState);
         result.setRemovedUserSessionId(removedUserSessionId);
         return result;
     }
 
-    public static UserSession logoutAndUpdateStateForNewLoginKick(AccountLoginServiceSet accountLoginServiceSet,
-                                                                  KickLoginServiceRepositorySet kickLoginServiceRepositorySet,
+    public static UserSession logoutAndUpdateStateForNewLoginKick(AccountLogoutAndUpdateStateForNewLoginKickRepositorySet repositorySet,
                                                                   String token) {
 
-        UserSession removedUserSession = logout(accountLoginServiceSet, token);
+        UserSession removedUserSession = logout(repositorySet, token);
         if (removedUserSession == null) {
             return null;
         }
 
-        KickLoginService.setLoggedOut(kickLoginServiceRepositorySet,
+        KickLoginService.setLoggedOut(repositorySet,
                 removedUserSession.getUser().getId());
         return removedUserSession;
+
     }
 
 }

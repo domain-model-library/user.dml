@@ -6,10 +6,7 @@ import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.*;
 import dml.user.service.repositoryset.*;
-import dml.user.service.result.AccountPasswordKickLoginResult;
-import dml.user.service.result.AccountPasswordLoginResult;
-import dml.user.service.result.OpenidLoginResult;
-import dml.user.service.result.RegisterNewUserResult;
+import dml.user.service.result.*;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -80,38 +77,39 @@ public class Login {
         boolean isBan1 = UserBanService.checkBan(userBanServiceRepositorySet,
                 user1.getId());
         assertTrue(isBan1);
-        UserBan userBan1 = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(userBanAutoLiftServiceRepositorySet,
+        CheckAutoLiftTimeAndLiftBanResult checkAutoLiftTimeAndLiftBanResult1 = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(userBanAutoLiftServiceRepositorySet,
                 user1.getId(),
                 currentTime);
-        assertNull(userBan1);
+        assertFalse(checkAutoLiftTimeAndLiftBanResult1.isLiftSuccess());
 
         currentTime += (31 * 1000L);
 
-        UserBan userBan2 = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(userBanAutoLiftServiceRepositorySet,
+        CheckAutoLiftTimeAndLiftBanResult checkAutoLiftTimeAndLiftBanResult2 = UserBanAutoLiftService.checkAutoLiftTimeAndLiftBan(userBanAutoLiftServiceRepositorySet,
                 user1.getId(),
                 currentTime);
-        assertNotNull(userBan2);
+        assertTrue(checkAutoLiftTimeAndLiftBanResult2.isLiftSuccess());
         boolean isBan2 = UserBanService.checkBan(userBanServiceRepositorySet,
                 user1.getId());
         assertFalse(isBan2);
 
-        UserAutoLiftBanService.banUser(userAutoLiftBanServiceRepositorySet,
+        UserBanService.banUserWithAutoLift(banUserWithAutoLiftRepositorySet,
                 user1.getId(),
-                new TestUserAutoLiftBan(currentTime + 60 * 1000L));
+                new TestUserBan(),
+                new TestAutoLiftTime(currentTime + 60 * 1000L));
 
         currentTime += (30 * 1000L);
 
-        CheckBanAndLiftResult checkBanAndLiftResult1 = UserAutoLiftBanService.checkBanAndLift(userAutoLiftBanServiceRepositorySet,
+        CheckBanAndAutoLiftResult checkBanAndAutoLiftResult1 = UserBanService.checkBanAndAutoLift(checkBanAndAutoLiftRepositorySet,
                 user1.getId(),
                 currentTime);
-        assertTrue(checkBanAndLiftResult1.isBanned());
+        assertTrue(checkBanAndAutoLiftResult1.isBanned());
 
         currentTime += (31 * 1000L);
 
-        CheckBanAndLiftResult checkBanAndLiftResult2 = UserAutoLiftBanService.checkBanAndLift(userAutoLiftBanServiceRepositorySet,
+        CheckBanAndAutoLiftResult checkBanAndAutoLiftResult2 = UserBanService.checkBanAndAutoLift(checkBanAndAutoLiftRepositorySet,
                 user1.getId(),
                 currentTime);
-        assertFalse(checkBanAndLiftResult2.isBanned());
+        assertFalse(checkBanAndAutoLiftResult2.isBanned());
     }
 
     @Test
@@ -138,14 +136,12 @@ public class Login {
                 accountPasswordLoginResult1.getNewUserSession().getId());
         assertNull(user2);
 
-        AccountPasswordKickLoginResult accountPasswordKickLoginResult1 = AccountLoginService.accountPasswordKickLogin(accountLoginServiceSet,
-                kickLoginServiceRepositorySet,
+        AccountPasswordKickLoginResult accountPasswordKickLoginResult1 = AccountLoginService.accountPasswordKickLogin(accountPasswordKickLoginRepositorySet,
                 "account1",
                 "pass1",
                 new TestSession(),
                 new TestUserLoginState());
-        AccountPasswordKickLoginResult accountPasswordKickLoginResult2 = AccountLoginService.accountPasswordKickLogin(accountLoginServiceSet,
-                kickLoginServiceRepositorySet,
+        AccountPasswordKickLoginResult accountPasswordKickLoginResult2 = AccountLoginService.accountPasswordKickLogin(accountPasswordKickLoginRepositorySet,
                 "account1",
                 "pass1",
                 new TestSession(),
@@ -154,11 +150,9 @@ public class Login {
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
         assertNull(user3);
 
-        AccountLoginService.logoutAndUpdateStateForNewLoginKick(accountLoginServiceSet,
-                kickLoginServiceRepositorySet,
+        AccountLoginService.logoutAndUpdateStateForNewLoginKick(accountLogoutAndUpdateStateForNewLoginKickRepositorySet,
                 accountPasswordKickLoginResult2.getNewUserSession().getId());
-        AccountPasswordKickLoginResult accountPasswordKickLoginResult3 = AccountLoginService.accountPasswordKickLogin(accountLoginServiceSet,
-                kickLoginServiceRepositorySet,
+        AccountPasswordKickLoginResult accountPasswordKickLoginResult3 = AccountLoginService.accountPasswordKickLogin(accountPasswordKickLoginRepositorySet,
                 "account1",
                 "pass1",
                 new TestSession(),
@@ -177,7 +171,6 @@ public class Login {
             new UUIDStyleRandomStringIdGenerator());
     UserBanRepository<UserBan, Object> userBanRepository = TestRepository.instance(UserBanRepository.class);
     AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = TestRepository.instance(AutoLiftTimeRepository.class);
-    UserAutoLiftBanRepository<UserAutoLiftBan, Object> userAutoLiftBanRepository = TestRepository.instance(UserAutoLiftBanRepository.class);
     UserAccountRepository<UserAccount> userAccountRepository = TestRepository.instance(UserAccountRepository.class);
 
     AccountLoginServiceSet accountLoginServiceSet = new AccountLoginServiceSet() {
@@ -288,10 +281,92 @@ public class Login {
         }
     };
 
-    UserAutoLiftBanServiceRepositorySet userAutoLiftBanServiceRepositorySet = new UserAutoLiftBanServiceRepositorySet() {
+    BanUserWithAutoLiftRepositorySet banUserWithAutoLiftRepositorySet = new BanUserWithAutoLiftRepositorySet() {
+
         @Override
-        public UserAutoLiftBanRepository<UserAutoLiftBan, Object> getUserAutoLiftBanRepository() {
-            return userAutoLiftBanRepository;
+        public UserBanRepository<UserBan, Object> getUserBanRepository() {
+            return userBanRepository;
+        }
+
+        @Override
+        public AutoLiftTimeRepository<AutoLiftTime, Object> getAutoLiftTimeRepository() {
+            return autoLiftTimeRepository;
+        }
+    };
+
+    CheckBanAndAutoLiftRepositorySet checkBanAndAutoLiftRepositorySet = new CheckBanAndAutoLiftRepositorySet() {
+        @Override
+        public AutoLiftTimeRepository<AutoLiftTime, Object> getAutoLiftTimeRepository() {
+            return autoLiftTimeRepository;
+        }
+
+        @Override
+        public UserBanRepository<UserBan, Object> getUserBanRepository() {
+            return userBanRepository;
+        }
+    };
+
+    AccountPasswordKickLoginRepositorySet accountPasswordKickLoginRepositorySet = new AccountPasswordKickLoginRepositorySet() {
+        @Override
+        public UserAccountRepository<UserAccount> getUserAccountRepository() {
+            return userAccountRepository;
+        }
+
+        @Override
+        public UserSessionRepository<UserSession> getUserSessionRepository() {
+            return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionIdGeneratorRepository getUserSessionIdGeneratorRepository() {
+            return userSessionIdGeneratorRepository;
+        }
+
+        @Override
+        public UserIdGeneratorRepository getUserIdGeneratorRepository() {
+            return userIdGeneratorRepository;
+        }
+
+        @Override
+        public UserRepository<User, Object> getUserRepository() {
+            return userRepository;
+        }
+
+        @Override
+        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
+            return userLoginStateRepository;
+        }
+    };
+
+    AccountLogoutAndUpdateStateForNewLoginKickRepositorySet accountLogoutAndUpdateStateForNewLoginKickRepositorySet = new AccountLogoutAndUpdateStateForNewLoginKickRepositorySet() {
+        @Override
+        public UserAccountRepository<UserAccount> getUserAccountRepository() {
+            return userAccountRepository;
+        }
+
+        @Override
+        public UserSessionRepository<UserSession> getUserSessionRepository() {
+            return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionIdGeneratorRepository getUserSessionIdGeneratorRepository() {
+            return userSessionIdGeneratorRepository;
+        }
+
+        @Override
+        public UserIdGeneratorRepository getUserIdGeneratorRepository() {
+            return userIdGeneratorRepository;
+        }
+
+        @Override
+        public UserRepository<User, Object> getUserRepository() {
+            return userRepository;
+        }
+
+        @Override
+        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
+            return userLoginStateRepository;
         }
     };
 
@@ -408,24 +483,6 @@ public class Login {
         }
 
 
-    }
-
-    class TestUserAutoLiftBan extends UserAutoLiftBanBase {
-        long id;
-
-        public TestUserAutoLiftBan(long liftTime) {
-            this.liftTime = liftTime;
-        }
-
-        @Override
-        public void setId(Object id) {
-            this.id = (long) id;
-        }
-
-        @Override
-        public Object getId() {
-            return id;
-        }
     }
 
     class TestUserAccount extends UserAccountBase {
