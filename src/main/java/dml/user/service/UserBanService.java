@@ -2,11 +2,9 @@ package dml.user.service;
 
 import dml.user.entity.AutoLiftTime;
 import dml.user.entity.UserBan;
+import dml.user.entity.UserSession;
 import dml.user.repository.UserBanRepository;
-import dml.user.service.repositoryset.BanUserWithAutoLiftRepositorySet;
-import dml.user.service.repositoryset.CheckBanAndAutoLiftRepositorySet;
-import dml.user.service.repositoryset.LiftAutoLiftBanRepositorySet;
-import dml.user.service.repositoryset.UserBanServiceRepositorySet;
+import dml.user.service.repositoryset.*;
 import dml.user.service.result.CheckAutoLiftTimeAndLiftBanResult;
 import dml.user.service.result.CheckBanAndAutoLiftResult;
 import dml.user.service.result.LiftAutoLiftBanResult;
@@ -91,6 +89,32 @@ public class UserBanService {
         result.setBanned(banned);
         return result;
 
+    }
+
+    public static UserSession banUserAndForceLogout(BanUserAndForceLogoutRepositorySet repositorySet,
+                                                    Object userId,
+                                                    UserBan newUserBan) {
+
+        banUser(repositorySet,
+                userId,
+                newUserBan);
+
+        return UserBanForceLogoutService.forceLogout(repositorySet,
+                userId);
+    }
+
+    public static UserSession banUserWithAutoLiftAndForceLogout(BanUserWithAutoLiftAndForceLogoutRepositorySet repositorySet,
+                                                                Object userId,
+                                                                UserBan newUserBan,
+                                                                AutoLiftTime newAutoLiftTime) {
+
+        banUserWithAutoLift(repositorySet,
+                userId,
+                newUserBan,
+                newAutoLiftTime);
+
+        return UserBanForceLogoutService.forceLogout(repositorySet,
+                userId);
     }
 
 }

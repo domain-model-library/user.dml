@@ -110,6 +110,33 @@ public class Login {
                 user1.getId(),
                 currentTime);
         assertFalse(checkBanAndAutoLiftResult2.isBanned());
+
+        UserBanService.banUserWithAutoLiftAndForceLogout(banUserWithAutoLiftAndForceLogoutRepositorySet,
+                user1.getId(),
+                new TestUserBan(),
+                new TestAutoLiftTime(currentTime + 60 * 1000L));
+
+        currentTime += (30 * 1000L);
+
+        OpenidKickLoginWithAutoLiftBanResult openidKickLoginWithAutoLiftBanResult1 = OpenidLoginService.openidKickLoginWithAutoLiftBan(openidKickLoginWithAutoLiftBanRepositorySet,
+                openId1,
+                new TestUser(),
+                new TestSession(),
+                new TestOpenIdUserBind(),
+                new TestUserLoginState(),
+                currentTime);
+        assertTrue(openidKickLoginWithAutoLiftBanResult1.getCheckBanAndAutoLiftResult().isBanned());
+
+        currentTime += (31 * 1000L);
+
+        OpenidKickLoginWithAutoLiftBanResult openidKickLoginWithAutoLiftBanResult2 = OpenidLoginService.openidKickLoginWithAutoLiftBan(openidKickLoginWithAutoLiftBanRepositorySet,
+                openId1,
+                new TestUser(),
+                new TestSession(),
+                new TestOpenIdUserBind(),
+                new TestUserLoginState(),
+                currentTime);
+        assertFalse(openidKickLoginWithAutoLiftBanResult2.getCheckBanAndAutoLiftResult().isBanned());
     }
 
     @Test
@@ -367,6 +394,70 @@ public class Login {
         @Override
         public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
             return userLoginStateRepository;
+        }
+    };
+
+    BanUserWithAutoLiftAndForceLogoutRepositorySet banUserWithAutoLiftAndForceLogoutRepositorySet = new BanUserWithAutoLiftAndForceLogoutRepositorySet() {
+        @Override
+        public AutoLiftTimeRepository<AutoLiftTime, Object> getAutoLiftTimeRepository() {
+            return autoLiftTimeRepository;
+        }
+
+        @Override
+        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
+            return userLoginStateRepository;
+        }
+
+        @Override
+        public UserSessionRepository<UserSession> getUserSessionRepository() {
+            return userSessionRepository;
+        }
+
+        @Override
+        public UserBanRepository<UserBan, Object> getUserBanRepository() {
+            return userBanRepository;
+        }
+    };
+
+    OpenidKickLoginWithAutoLiftBanRepositorySet openidKickLoginWithAutoLiftBanRepositorySet = new OpenidKickLoginWithAutoLiftBanRepositorySet() {
+        @Override
+        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
+            return userLoginStateRepository;
+        }
+
+        @Override
+        public OpenIdUserBindRepository<OpenIdUserBind> getOpenIdUserBindRepository() {
+            return openIdUserBindRepository;
+        }
+
+        @Override
+        public UserIdGeneratorRepository getUserIdGeneratorRepository() {
+            return userIdGeneratorRepository;
+        }
+
+        @Override
+        public UserRepository<User, Object> getUserRepository() {
+            return userRepository;
+        }
+
+        @Override
+        public UserSessionRepository<UserSession> getUserSessionRepository() {
+            return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionIdGeneratorRepository getUserSessionIdGeneratorRepository() {
+            return userSessionIdGeneratorRepository;
+        }
+
+        @Override
+        public AutoLiftTimeRepository<AutoLiftTime, Object> getAutoLiftTimeRepository() {
+            return autoLiftTimeRepository;
+        }
+
+        @Override
+        public UserBanRepository<UserBan, Object> getUserBanRepository() {
+            return userBanRepository;
         }
     };
 

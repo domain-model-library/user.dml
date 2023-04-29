@@ -123,13 +123,15 @@ public class OpenidLoginService {
 
         OpenidKickLoginWithAutoLiftBanResult result = new OpenidKickLoginWithAutoLiftBanResult();
 
-        OpenIdUserBind openIdUserBind = openIdUserBindRepository.find(openid);
-        CheckBanAndAutoLiftResult checkBanAndAutoLiftResult = UserBanService.checkBanAndAutoLift(repositorySet,
-                openIdUserBind.getUser().getId(),
-                currentTime);
-        result.setCheckBanAndAutoLiftResult(checkBanAndAutoLiftResult);
-        if (checkBanAndAutoLiftResult.isBanned()) {
-            return result;
+        OpenIdUserBind openIdUserBind = openIdUserBindRepository.take(openid);
+        if (openIdUserBind != null) {
+            CheckBanAndAutoLiftResult checkBanAndAutoLiftResult = UserBanService.checkBanAndAutoLift(repositorySet,
+                    openIdUserBind.getUser().getId(),
+                    currentTime);
+            result.setCheckBanAndAutoLiftResult(checkBanAndAutoLiftResult);
+            if (checkBanAndAutoLiftResult.isBanned()) {
+                return result;
+            }
         }
 
         OpenidKickLoginResult openidKickLoginResult = openidKickLogin(repositorySet,
