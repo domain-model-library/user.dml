@@ -1,7 +1,7 @@
+import dml.common.repository.TestCommonRepository;
+import dml.common.repository.TestCommonSingletonRepository;
 import dml.id.entity.LongIdGenerator;
 import dml.id.entity.UUIDStyleRandomStringIdGenerator;
-import dml.test.repository.TestRepository;
-import dml.test.repository.TestSingletonRepository;
 import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.*;
@@ -188,17 +188,19 @@ public class Login {
 
     }
 
-    OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestRepository.instance(OpenIdUserBindRepository.class);
-    UserIdGeneratorRepository userIdGeneratorRepository = TestSingletonRepository.instance(UserIdGeneratorRepository.class,
-            new LongIdGenerator(1L));
-    UserRepository<User, Object> userRepository = TestRepository.instance(UserRepository.class);
-    UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = TestRepository.instance(UserLoginStateRepository.class);
-    UserSessionRepository<UserSession> userSessionRepository = TestRepository.instance(UserSessionRepository.class);
-    UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = TestSingletonRepository.instance(UserSessionIdGeneratorRepository.class,
-            new UUIDStyleRandomStringIdGenerator());
-    UserBanRepository<UserBan, Object> userBanRepository = TestRepository.instance(UserBanRepository.class);
-    AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = TestRepository.instance(AutoLiftTimeRepository.class);
-    UserAccountRepository<UserAccount> userAccountRepository = TestRepository.instance(UserAccountRepository.class);
+    OpenIdUserBindRepository<OpenIdUserBind> openIdUserBindRepository = TestCommonRepository.instance(OpenIdUserBindRepository.class);
+    UserIdGeneratorRepository userIdGeneratorRepository = TestCommonSingletonRepository.instance(UserIdGeneratorRepository.class,
+            new LongIdGenerator(1L) {
+            });
+    UserRepository<User, Object> userRepository = TestCommonRepository.instance(UserRepository.class);
+    UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = TestCommonRepository.instance(UserLoginStateRepository.class);
+    UserSessionRepository<UserSession> userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
+    UserSessionIdGeneratorRepository userSessionIdGeneratorRepository = TestCommonSingletonRepository.instance(UserSessionIdGeneratorRepository.class,
+            new UUIDStyleRandomStringIdGenerator() {
+            });
+    UserBanRepository<UserBan, Object> userBanRepository = TestCommonRepository.instance(UserBanRepository.class);
+    AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
+    UserAccountRepository<UserAccount> userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
 
     AccountLoginServiceSet accountLoginServiceSet = new AccountLoginServiceSet() {
         @Override
