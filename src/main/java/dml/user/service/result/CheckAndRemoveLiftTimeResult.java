@@ -1,21 +1,21 @@
 package dml.user.service.result;
 
 import dml.user.entity.AutoLiftTime;
-import dml.user.entity.UserBan;
 
 /**
  * @author zheng chengdong
  */
-public class LiftAutoLiftBanResult {
-    private UserBan userBan;
+public class CheckAndRemoveLiftTimeResult {
+    private boolean toLift;
     private AutoLiftTime autoLiftTime;
 
-    public UserBan getUserBan() {
-        return userBan;
+
+    public boolean isToLift() {
+        return toLift;
     }
 
-    public void setUserBan(UserBan userBan) {
-        this.userBan = userBan;
+    public void setToLift(boolean toLift) {
+        this.toLift = toLift;
     }
 
     public AutoLiftTime getAutoLiftTime() {

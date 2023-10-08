@@ -1,11 +1,9 @@
 package dml.user.service;
 
 import dml.user.entity.AutoLiftTime;
-import dml.user.entity.UserBan;
 import dml.user.repository.AutoLiftTimeRepository;
-import dml.user.repository.UserBanRepository;
 import dml.user.service.repositoryset.UserBanAutoLiftServiceRepositorySet;
-import dml.user.service.result.CheckAutoLiftTimeAndLiftBanResult;
+import dml.user.service.result.CheckAndRemoveLiftTimeResult;
 
 /**
  * @author zheng chengdong
@@ -20,33 +18,22 @@ public class UserBanAutoLiftService {
         autoLiftTimeRepository.put(newAutoLiftTime);
     }
 
-    public static CheckAutoLiftTimeAndLiftBanResult checkAutoLiftTimeAndLiftBan(UserBanAutoLiftServiceRepositorySet repositorySet,
-                                                                                Object userId,
-                                                                                long currentTime) {
+    public static CheckAndRemoveLiftTimeResult checkAndRemoveLiftTime(UserBanAutoLiftServiceRepositorySet repositorySet,
+                                                                      Object userId,
+                                                                      long currentTime) {
 
         AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
-        UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
 
-        CheckAutoLiftTimeAndLiftBanResult result = new CheckAutoLiftTimeAndLiftBanResult();
+        CheckAndRemoveLiftTimeResult result = new CheckAndRemoveLiftTimeResult();
 
         AutoLiftTime autoLiftTime = autoLiftTimeRepository.take(userId);
         if (autoLiftTime.timeToLift(currentTime)) {
             autoLiftTimeRepository.remove(autoLiftTime.getId());
-            UserBan removedBan = userBanRepository.remove(autoLiftTime.getId());
-            result.setLiftSuccess(true);
-            result.setUserBan(removedBan);
+            result.setToLift(true);
             result.setAutoLiftTime(autoLiftTime);
             return result;
         }
         return result;
-    }
-
-    public static AutoLiftTime removeAutoLiftTime(UserBanAutoLiftServiceRepositorySet repositorySet,
-                                                  Object userId) {
-
-        AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
-
-        return autoLiftTimeRepository.remove(userId);
     }
 
 }

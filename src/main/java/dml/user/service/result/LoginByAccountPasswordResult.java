@@ -5,11 +5,12 @@ import dml.user.entity.UserSession;
 /**
  * @author zheng chengdong
  */
-public class AccountPasswordLoginResult {
+public class LoginByAccountPasswordResult {
     private boolean noAccount;
     private boolean incorrectPassword;
     private boolean loginSuccess;
     private UserSession newUserSession;
+    private String removedUserSessionID;
 
     public boolean isNoAccount() {
         return noAccount;
@@ -41,5 +42,13 @@ public class AccountPasswordLoginResult {
 
     public void setNewUserSession(UserSession newUserSession) {
         this.newUserSession = newUserSession;
+    }
+
+    public void setRemovedUserSessionID(String removedUserSessionID) {
+        this.removedUserSessionID = removedUserSessionID;
+    }
+
+    public String getRemovedUserSessionID() {
+        return removedUserSessionID;
     }
 }

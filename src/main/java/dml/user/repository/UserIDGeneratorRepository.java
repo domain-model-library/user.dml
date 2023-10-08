@@ -6,5 +6,5 @@ import dml.id.entity.IdGenerator;
 /**
  * @author zheng chengdong
  */
-public interface UserIdGeneratorRepository extends CommonSingletonRepository<IdGenerator<Object>> {
+public interface UserIDGeneratorRepository extends CommonSingletonRepository<IdGenerator<Object>> {
 }

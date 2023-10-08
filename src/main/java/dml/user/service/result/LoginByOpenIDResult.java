@@ -5,9 +5,10 @@ import dml.user.entity.UserSession;
 /**
  * @author zheng chengdong
  */
-public class OpenidLoginResult {
+public class LoginByOpenIDResult {
     private boolean createNewUser;
     private UserSession newUserSession;
+    private String removedUserSessionID;
 
     public boolean isCreateNewUser() {
         return createNewUser;
@@ -23,5 +24,13 @@ public class OpenidLoginResult {
 
     public void setNewUserSession(UserSession newUserSession) {
         this.newUserSession = newUserSession;
+    }
+
+    public void setRemovedUserSessionID(String removedUserSessionID) {
+        this.removedUserSessionID = removedUserSessionID;
+    }
+
+    public String getRemovedUserSessionID() {
+        return removedUserSessionID;
     }
 }
