@@ -1,13 +1,14 @@
 package dml.user.service;
 
-import dml.user.entity.User;
 import dml.user.entity.UserAccount;
 import dml.user.entity.UserLoginState;
 import dml.user.entity.UserSession;
-import dml.user.repository.*;
+import dml.user.repository.UserAccountRepository;
+import dml.user.repository.UserLoginStateRepository;
+import dml.user.repository.UserSessionIDGeneratorRepository;
+import dml.user.repository.UserSessionRepository;
 import dml.user.service.repositoryset.LoginByAccountServiceRepositorySet;
 import dml.user.service.result.LoginByAccountPasswordResult;
-import dml.user.service.result.RegisterNewUserResult;
 import dml.user.service.shared.SharedBusinessMethodsBetweenServices;
 
 public class LoginByAccountService {
@@ -49,29 +50,6 @@ public class LoginByAccountService {
 
         result.setLoginSuccess(true);
 
-        return result;
-    }
-
-    public static RegisterNewUserResult registerNewUser(LoginByAccountServiceRepositorySet repositorySet,
-                                                        UserAccount newUserAccount,
-                                                        User newUser) {
-
-        UserAccountRepository<UserAccount> userAccountRepository = repositorySet.getUserAccountRepository();
-        UserIDGeneratorRepository userIdGeneratorRepository = repositorySet.getUserIdGeneratorRepository();
-        UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
-
-        RegisterNewUserResult result = new RegisterNewUserResult();
-
-        UserAccount existsUserAccount = userAccountRepository.putIfAbsent(newUserAccount);
-        if (existsUserAccount != null) {
-            result.setAccountExists(true);
-            return result;
-        }
-
-        newUser.setId(userIdGeneratorRepository.take().generateId());
-        userRepository.put(newUser);
-        newUserAccount.setUser(newUser);
-        result.setNewUser(newUser);
         return result;
     }
 

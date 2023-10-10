@@ -1,10 +1,12 @@
 package dml.user.service.repositoryset;
 
-import dml.user.entity.User;
 import dml.user.entity.UserAccount;
 import dml.user.entity.UserLoginState;
 import dml.user.entity.UserSession;
-import dml.user.repository.*;
+import dml.user.repository.UserAccountRepository;
+import dml.user.repository.UserLoginStateRepository;
+import dml.user.repository.UserSessionIDGeneratorRepository;
+import dml.user.repository.UserSessionRepository;
 
 /**
  * @author zheng chengdong
@@ -15,10 +17,6 @@ public interface LoginByAccountServiceRepositorySet {
     UserSessionRepository<UserSession> getUserSessionRepository();
 
     UserSessionIDGeneratorRepository getUserSessionIdGeneratorRepository();
-
-    UserIDGeneratorRepository getUserIdGeneratorRepository();
-
-    UserRepository<User, Object> getUserRepository();
 
     UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository();
 }

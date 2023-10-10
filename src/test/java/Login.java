@@ -96,7 +96,7 @@ public class Login {
 
     @Test
     public void accountIdLogin() {
-        RegisterNewUserResult registerNewUserResult1 = LoginByAccountService.registerNewUser(loginByAccountServiceRepositorySet,
+        RegisterNewUserResult registerNewUserResult1 = UserRegistrationService.registerNewUser(userRegistrationServiceRepositorySet,
                 new TestUserAccount("account1", "pass1"),
                 new TestUser());
         assertFalse(registerNewUserResult1.isAccountExists());
@@ -149,6 +149,23 @@ public class Login {
     AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
     UserAccountRepository<UserAccount> userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
 
+    UserRegistrationServiceRepositorySet userRegistrationServiceRepositorySet = new UserRegistrationServiceRepositorySet() {
+        @Override
+        public UserAccountRepository<UserAccount> getUserAccountRepository() {
+            return userAccountRepository;
+        }
+
+        @Override
+        public UserIDGeneratorRepository getUserIdGeneratorRepository() {
+            return userIdGeneratorRepository;
+        }
+
+        @Override
+        public UserRepository<User, Object> getUserRepository() {
+            return userRepository;
+        }
+    };
+
     LoginByAccountServiceRepositorySet loginByAccountServiceRepositorySet = new LoginByAccountServiceRepositorySet() {
         @Override
         public UserAccountRepository<UserAccount> getUserAccountRepository() {
@@ -163,16 +180,6 @@ public class Login {
         @Override
         public UserSessionIDGeneratorRepository getUserSessionIdGeneratorRepository() {
             return userSessionIdGeneratorRepository;
-        }
-
-        @Override
-        public UserIDGeneratorRepository getUserIdGeneratorRepository() {
-            return userIdGeneratorRepository;
-        }
-
-        @Override
-        public UserRepository<User, Object> getUserRepository() {
-            return userRepository;
         }
 
         @Override
