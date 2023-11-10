@@ -2,6 +2,7 @@ package dml.user.service;
 
 import dml.user.entity.*;
 import dml.user.repository.*;
+import dml.user.service.repositoryset.LoginByOpenIDServiceRepositorySet;
 import dml.user.service.repositoryset.LoginByOpenIDWithBanSupportServiceRepositorySet;
 import dml.user.service.result.LoginByOpenIDWithBanCheckResult;
 import dml.user.service.shared.SharedBusinessMethodsBetweenServices;
@@ -71,6 +72,20 @@ public class LoginByOpenIDWithBanSupportService {
         result.setRemovedUserSessionID(removedUserSessionID);
 
         return result;
+
+    }
+
+    public static UserSession logout(LoginByOpenIDServiceRepositorySet repositorySet,
+                                     String token) {
+
+        UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
+        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+
+        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
+
+        SharedBusinessMethodsBetweenServices.updateUserLoginStateForLogout(userLoginStateRepository,
+                removedUserSession.getUser().getId());
+        return removedUserSession;
 
     }
 
