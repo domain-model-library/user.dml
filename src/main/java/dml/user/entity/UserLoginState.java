@@ -4,9 +4,9 @@ package dml.user.entity;
  * @author zheng chengdong
  */
 public interface UserLoginState {
-    void setId(Object id);
+    void setUserID(Object userID);
 
-    Object getId();
+    Object getUserID();
 
     UserSession getCurrentUserSession();
 

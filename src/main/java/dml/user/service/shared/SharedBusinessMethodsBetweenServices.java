@@ -32,7 +32,7 @@ public class SharedBusinessMethodsBetweenServices {
 
 
         UserSession newUserSession = userSessionRepository.find(newUserSessionId);
-        newUserLoginState.setId(newUserSession.getUser().getId());
+        newUserLoginState.setUserID(newUserSession.getUser().getId());
         UserLoginState userLoginState = userLoginStateRepository.takeOrPutIfAbsent(newUserSession.getUser().getId(), newUserLoginState);
         UserSession currentUserSession = userLoginState.getCurrentUserSession();
         String removedUserSessionId = null;
@@ -69,7 +69,7 @@ public class SharedBusinessMethodsBetweenServices {
         OpenIDUserBind openIDUserBind = openIDUserBindRepository.find(openID);
         if (openIDUserBind == null) {
             //需要创建新用户
-            newOpenIDUserBind.setId(openID);
+            newOpenIDUserBind.setOpenID(openID);
             OpenIDUserBind existsOpenIDUserBind = openIDUserBindRepository.putIfAbsent(newOpenIDUserBind);
             if (existsOpenIDUserBind != null) {
                 openIDUserBind = existsOpenIDUserBind;

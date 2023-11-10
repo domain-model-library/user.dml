@@ -18,7 +18,7 @@ public class UserBanService {
         UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
         UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
-        newUserBan.setId(userId);
+        newUserBan.setUserID(userId);
         userBanRepository.put(newUserBan);
 
         UserLoginState userLoginState = userLoginStateRepository.take(userId);

@@ -14,7 +14,7 @@ public class UserBanAutoLiftService {
                                    Object userId,
                                    AutoLiftTime newAutoLiftTime) {
         AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
-        newAutoLiftTime.setId(userId);
+        newAutoLiftTime.setUserID(userId);
         autoLiftTimeRepository.put(newAutoLiftTime);
     }
 
@@ -28,7 +28,7 @@ public class UserBanAutoLiftService {
 
         AutoLiftTime autoLiftTime = autoLiftTimeRepository.take(userId);
         if (autoLiftTime.timeToLift(currentTime)) {
-            autoLiftTimeRepository.remove(autoLiftTime.getId());
+            autoLiftTimeRepository.remove(autoLiftTime.getUserID());
             result.setToLift(true);
             result.setAutoLiftTime(autoLiftTime);
             return result;

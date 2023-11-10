@@ -11,6 +11,7 @@ import dml.user.service.result.RegisterNewUserResult;
 public class UserRegistrationService {
 
     public static RegisterNewUserResult registerNewUser(UserRegistrationServiceRepositorySet repositorySet,
+                                                        String account,
                                                         UserAccount newUserAccount,
                                                         User newUser) {
 
@@ -20,6 +21,7 @@ public class UserRegistrationService {
 
         RegisterNewUserResult result = new RegisterNewUserResult();
 
+        newUserAccount.setAccount(account);
         UserAccount existsUserAccount = userAccountRepository.putIfAbsent(newUserAccount);
         if (existsUserAccount != null) {
             result.setAccountExists(true);

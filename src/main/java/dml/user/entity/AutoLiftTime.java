@@ -4,9 +4,9 @@ package dml.user.entity;
  * @author zheng chengdong
  */
 public interface AutoLiftTime {
-    void setId(Object id);
+    void setUserID(Object userID);
 
-    Object getId();
+    Object getUserID();
 
     boolean timeToLift(long currentTime);
 }

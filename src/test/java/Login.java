@@ -96,7 +96,7 @@ public class Login {
 
     @Test
     public void accountIdLogin() {
-        RegisterNewUserResult registerNewUserResult1 = UserRegistrationService.registerNewUser(userRegistrationServiceRepositorySet,
+        RegisterNewUserResult registerNewUserResult1 = UserRegistrationService.registerNewUser(userRegistrationServiceRepositorySet, "account1",
                 new TestUserAccount("account1", "pass1"),
                 new TestUser());
         assertFalse(registerNewUserResult1.isAccountExists());
@@ -333,12 +333,12 @@ public class Login {
     }
 
     class TestOpenIdUserBind implements OpenIDUserBind {
-        String id;
+        String openID;
         TestUser user;
 
         @Override
-        public void setId(String id) {
-            this.id = id;
+        public void setOpenID(String openID) {
+            this.openID = openID;
         }
 
         @Override
@@ -353,17 +353,17 @@ public class Login {
     }
 
     class TestUserLoginState implements UserLoginState {
-        long id;
+        long userID;
         UserSession currentUserSession;
 
         @Override
-        public void setId(Object id) {
-            this.id = (long) id;
+        public void setUserID(Object userID) {
+            this.userID = (long) userID;
         }
 
         @Override
-        public Object getId() {
-            return id;
+        public Object getUserID() {
+            return userID;
         }
 
         @Override
@@ -378,41 +378,46 @@ public class Login {
     }
 
     class TestUserBan implements UserBan {
-        long id;
+        long userID;
 
         @Override
-        public void setId(Object id) {
-            this.id = (long) id;
+        public void setUserID(Object userID) {
+            this.userID = (long) userID;
         }
     }
 
     class TestAutoLiftTime extends AutoLiftTimeBase {
-        long id;
+        long userID;
 
         public TestAutoLiftTime(long liftTime) {
             this.liftTime = liftTime;
         }
 
         @Override
-        public void setId(Object id) {
-            this.id = (long) id;
+        public void setUserID(Object userID) {
+            this.userID = (long) userID;
         }
 
         @Override
-        public Object getId() {
-            return id;
+        public Object getUserID() {
+            return userID;
         }
 
 
     }
 
     class TestUserAccount extends UserAccountBase {
-        String id;
+        String account;
         TestUser user;
 
         public TestUserAccount(String account, String password) {
-            this.id = account;
+            this.account = account;
             this.password = password;
+        }
+
+        @Override
+        public void setAccount(String account) {
+            this.account = account;
         }
 
         @Override
