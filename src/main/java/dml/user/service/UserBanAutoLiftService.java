@@ -10,17 +10,17 @@ import dml.user.service.result.CheckAndRemoveLiftTimeResult;
  */
 public class UserBanAutoLiftService {
 
-    public static void setAutoLiftTime(UserBanAutoLiftServiceRepositorySet repositorySet,
-                                       Object userId,
-                                       AutoLiftTime newAutoLiftTime) {
+    public static void setAutoLift(UserBanAutoLiftServiceRepositorySet repositorySet,
+                                   Object userId,
+                                   AutoLiftTime newAutoLiftTime) {
         AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
         newAutoLiftTime.setId(userId);
         autoLiftTimeRepository.put(newAutoLiftTime);
     }
 
-    public static CheckAndRemoveLiftTimeResult checkAndRemoveLiftTime(UserBanAutoLiftServiceRepositorySet repositorySet,
-                                                                      Object userId,
-                                                                      long currentTime) {
+    public static CheckAndRemoveLiftTimeResult checkToLiftAndUnsetAutoLift(UserBanAutoLiftServiceRepositorySet repositorySet,
+                                                                           Object userId,
+                                                                           long currentTime) {
 
         AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
 

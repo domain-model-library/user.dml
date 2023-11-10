@@ -63,7 +63,7 @@ public class Login {
                 user1.getId(),
                 new TestUserBan()
         );
-        UserBanAutoLiftService.setAutoLiftTime(userBanAutoLiftServiceRepositorySet,
+        UserBanAutoLiftService.setAutoLift(userBanAutoLiftServiceRepositorySet,
                 user1.getId()
                 , new TestAutoLiftTime(currentTime + 60 * 1000L));
         User user4 = AuthService.auth(authServiceRepositorySet,
@@ -75,14 +75,14 @@ public class Login {
         boolean isBan1 = UserBanService.checkBan(userBanServiceRepositorySet,
                 user1.getId());
         assertTrue(isBan1);
-        CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult1 = UserBanAutoLiftService.checkAndRemoveLiftTime(userBanAutoLiftServiceRepositorySet,
+        CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult1 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
                 user1.getId(),
                 currentTime);
         assertFalse(checkAndRemoveLiftTimeResult1.isToLift());
 
         currentTime += (31 * 1000L);
 
-        CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult2 = UserBanAutoLiftService.checkAndRemoveLiftTime(userBanAutoLiftServiceRepositorySet,
+        CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult2 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
                 user1.getId(),
                 currentTime);
         assertTrue(checkAndRemoveLiftTimeResult2.isToLift());
