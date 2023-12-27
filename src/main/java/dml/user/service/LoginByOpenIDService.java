@@ -2,7 +2,7 @@ package dml.user.service;
 
 import dml.user.entity.OpenIDUserBind;
 import dml.user.entity.User;
-import dml.user.entity.UserLoginState;
+import dml.user.entity.UserCurrentSession;
 import dml.user.entity.UserSession;
 import dml.user.repository.*;
 import dml.user.service.repositoryset.LoginByOpenIDServiceRepositorySet;
@@ -27,14 +27,14 @@ public class LoginByOpenIDService {
                                                     User newUser,
                                                     UserSession newUserSession,
                                                     OpenIDUserBind newOpenIDUserBind,
-                                                    UserLoginState newUserLoginState) {
+                                                    UserCurrentSession newUserCurrentSession) {
 
         OpenIDUserBindRepository<OpenIDUserBind> openIDUserBindRepository = repositorySet.getOpenIDUserBindRepository();
         UserIDGeneratorRepository userIDGeneratorRepository = repositorySet.getUserIDGeneratorRepository();
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
 
         LoginByOpenIDResult result = new LoginByOpenIDResult();
 
@@ -55,9 +55,9 @@ public class LoginByOpenIDService {
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
-                userLoginStateRepository,
+                userCurrentSessionRepository,
                 newUserSession.getId(),
-                newUserLoginState
+                newUserCurrentSession
         );
         result.setRemovedUserSessionID(removedUserSessionID);
 
@@ -68,11 +68,11 @@ public class LoginByOpenIDService {
                                      String token) {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
 
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
 
-        SharedBusinessMethodsBetweenServices.updateUserLoginStateForLogout(userLoginStateRepository,
+        SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
                 removedUserSession.getUser().getId());
         return removedUserSession;
 

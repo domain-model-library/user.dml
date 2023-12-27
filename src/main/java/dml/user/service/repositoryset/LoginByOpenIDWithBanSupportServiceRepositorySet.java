@@ -16,5 +16,5 @@ public interface LoginByOpenIDWithBanSupportServiceRepositorySet {
 
     UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository();
 
-    UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository();
+    UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository();
 }

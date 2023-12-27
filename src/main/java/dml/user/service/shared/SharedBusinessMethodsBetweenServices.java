@@ -26,28 +26,28 @@ public class SharedBusinessMethodsBetweenServices {
     }
 
     public static String newLoginKickOldLogin(UserSessionRepository<UserSession> userSessionRepository,
-                                              UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository,
+                                              UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository,
                                               String newUserSessionId,
-                                              UserLoginState newUserLoginState) {
+                                              UserCurrentSession newUserCurrentSession) {
 
 
         UserSession newUserSession = userSessionRepository.find(newUserSessionId);
-        newUserLoginState.setUserID(newUserSession.getUser().getId());
-        UserLoginState userLoginState = userLoginStateRepository.takeOrPutIfAbsent(newUserSession.getUser().getId(), newUserLoginState);
-        UserSession currentUserSession = userLoginState.getCurrentUserSession();
+        newUserCurrentSession.setUserID(newUserSession.getUser().getId());
+        UserCurrentSession userCurrentSession = userCurrentSessionRepository.takeOrPutIfAbsent(newUserSession.getUser().getId(), newUserCurrentSession);
+        UserSession currentUserSession = userCurrentSession.getCurrentSession();
         String removedUserSessionId = null;
         if (currentUserSession != null) {
             UserSession removedUserSession = userSessionRepository.remove(currentUserSession.getId());
             removedUserSessionId = removedUserSession.getId();
         }
-        userLoginState.setCurrentUserSession(newUserSession);
+        userCurrentSession.setCurrentSession(newUserSession);
         return removedUserSessionId;
     }
 
-    public static void updateUserLoginStateForLogout(UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository,
-                                                     Object userId) {
-        UserLoginState userLoginState = userLoginStateRepository.take(userId);
-        userLoginState.setCurrentUserSession(null);
+    public static void updateUserCurrentSessionForLogout(UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository,
+                                                         Object userId) {
+        UserCurrentSession userCurrentSession = userCurrentSessionRepository.take(userId);
+        userCurrentSession.setCurrentSession(null);
     }
 
     public static boolean checkBan(UserBanRepository<UserBan, Object> userBanRepository,

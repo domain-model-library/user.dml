@@ -27,7 +27,7 @@ public class LoginByOpenIDWithBanSupportService {
                                                                             User newUser,
                                                                             UserSession newUserSession,
                                                                             OpenIDUserBind newOpenIDUserBind,
-                                                                            UserLoginState newUserLoginState) {
+                                                                            UserCurrentSession newUserCurrentSession) {
 
         OpenIDUserBindRepository<OpenIDUserBind> openIDUserBindRepository = repositorySet.getOpenIDUserBindRepository();
         UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
@@ -35,7 +35,7 @@ public class LoginByOpenIDWithBanSupportService {
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
 
         LoginByOpenIDWithBanCheckResult result = new LoginByOpenIDWithBanCheckResult();
 
@@ -65,9 +65,9 @@ public class LoginByOpenIDWithBanSupportService {
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
-                userLoginStateRepository,
+                userCurrentSessionRepository,
                 newUserSession.getId(),
-                newUserLoginState
+                newUserCurrentSession
         );
         result.setRemovedUserSessionID(removedUserSessionID);
 
@@ -79,11 +79,11 @@ public class LoginByOpenIDWithBanSupportService {
                                      String token) {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
 
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
 
-        SharedBusinessMethodsBetweenServices.updateUserLoginStateForLogout(userLoginStateRepository,
+        SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
                 removedUserSession.getUser().getId());
         return removedUserSession;
 

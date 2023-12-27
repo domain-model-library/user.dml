@@ -1,10 +1,10 @@
 package dml.user.service;
 
 import dml.user.entity.UserAccount;
-import dml.user.entity.UserLoginState;
+import dml.user.entity.UserCurrentSession;
 import dml.user.entity.UserSession;
 import dml.user.repository.UserAccountRepository;
-import dml.user.repository.UserLoginStateRepository;
+import dml.user.repository.UserCurrentSessionRepository;
 import dml.user.repository.UserSessionIDGeneratorRepository;
 import dml.user.repository.UserSessionRepository;
 import dml.user.service.repositoryset.LoginByAccountServiceRepositorySet;
@@ -16,12 +16,12 @@ public class LoginByAccountService {
                                                                       String account,
                                                                       String password,
                                                                       UserSession newUserSession,
-                                                                      UserLoginState newUserLoginState) {
+                                                                      UserCurrentSession newUserCurrentSession) {
 
         UserAccountRepository<UserAccount> userAccountRepository = repositorySet.getUserAccountRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = repositorySet.getUserSessionIdGeneratorRepository();
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
 
         LoginByAccountPasswordResult result = new LoginByAccountPasswordResult();
 
@@ -42,9 +42,9 @@ public class LoginByAccountService {
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
-                userLoginStateRepository,
+                userCurrentSessionRepository,
                 newUserSession.getId(),
-                newUserLoginState
+                newUserCurrentSession
         );
         result.setRemovedUserSessionID(removedUserSessionID);
 
@@ -57,11 +57,11 @@ public class LoginByAccountService {
                                      String token) {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
 
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
 
-        SharedBusinessMethodsBetweenServices.updateUserLoginStateForLogout(userLoginStateRepository,
+        SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
                 removedUserSession.getUser().getId());
         return removedUserSession;
     }

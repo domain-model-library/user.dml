@@ -2,7 +2,7 @@ package dml.user.service.repositoryset;
 
 import dml.user.entity.OpenIDUserBind;
 import dml.user.entity.User;
-import dml.user.entity.UserLoginState;
+import dml.user.entity.UserCurrentSession;
 import dml.user.entity.UserSession;
 import dml.user.repository.*;
 
@@ -20,5 +20,5 @@ public interface LoginByOpenIDServiceRepositorySet {
 
     UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository();
 
-    UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository();
+    UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository();
 }

@@ -28,7 +28,7 @@ public class Login {
                 new TestUser(),
                 new TestSession(),
                 new TestOpenIdUserBind(),
-                new TestUserLoginState());
+                new TestUserCurrentSession());
         assertTrue(openidLoginResult1.isCreateNewUser());
         assertNotNull(openidLoginResult1.getNewUserSession().getUser());
         assertNotNull(openidLoginResult1.getNewUserSession());
@@ -45,7 +45,7 @@ public class Login {
                 new TestUser(),
                 new TestSession(),
                 new TestOpenIdUserBind(),
-                new TestUserLoginState());
+                new TestUserCurrentSession());
         assertFalse(openidLoginResult2.isCreateNewUser());
         assertEquals(openidLoginResult1.getNewUserSession().getId(), openidLoginResult2.getRemovedUserSessionID());
 
@@ -105,7 +105,7 @@ public class Login {
                 "account1",
                 "pass1",
                 new TestSession(),
-                new TestUserLoginState());
+                new TestUserCurrentSession());
         assertTrue(loginByAccountPasswordResult1.isLoginSuccess());
 
         User user1 = AuthService.auth(authServiceRepositorySet,
@@ -123,12 +123,12 @@ public class Login {
                 "account1",
                 "pass1",
                 new TestSession(),
-                new TestUserLoginState());
+                new TestUserCurrentSession());
         LoginByAccountPasswordResult accountPasswordKickLoginResult2 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
                 "pass1",
                 new TestSession(),
-                new TestUserLoginState());
+                new TestUserCurrentSession());
         User user3 = AuthService.auth(authServiceRepositorySet,
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
         assertNull(user3);
@@ -140,7 +140,7 @@ public class Login {
             new LongIdGenerator(1L) {
             });
     UserRepository<User, Object> userRepository = TestCommonRepository.instance(UserRepository.class);
-    UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = TestCommonRepository.instance(UserLoginStateRepository.class);
+    UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = TestCommonRepository.instance(UserCurrentSessionRepository.class);
     UserSessionRepository<UserSession> userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
     UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = TestCommonSingletonRepository.instance(UserSessionIDGeneratorRepository.class,
             new UUIDStyleRandomStringIdGenerator() {
@@ -183,8 +183,8 @@ public class Login {
         }
 
         @Override
-        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
-            return userLoginStateRepository;
+        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+            return userCurrentSessionRepository;
         }
     };
 
@@ -217,8 +217,8 @@ public class Login {
         }
 
         @Override
-        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
-            return userLoginStateRepository;
+        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+            return userCurrentSessionRepository;
         }
     };
 
@@ -254,8 +254,8 @@ public class Login {
         }
 
         @Override
-        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
-            return userLoginStateRepository;
+        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+            return userCurrentSessionRepository;
         }
     };
 
@@ -274,8 +274,8 @@ public class Login {
         }
 
         @Override
-        public UserLoginStateRepository<UserLoginState, Object> getUserLoginStateRepository() {
-            return userLoginStateRepository;
+        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+            return userCurrentSessionRepository;
         }
 
         @Override
@@ -352,7 +352,7 @@ public class Login {
         }
     }
 
-    class TestUserLoginState implements UserLoginState {
+    class TestUserCurrentSession implements UserCurrentSession {
         long userID;
         UserSession currentUserSession;
 
@@ -367,13 +367,13 @@ public class Login {
         }
 
         @Override
-        public UserSession getCurrentUserSession() {
+        public UserSession getCurrentSession() {
             return currentUserSession;
         }
 
         @Override
-        public void setCurrentUserSession(UserSession currentUserSession) {
-            this.currentUserSession = currentUserSession;
+        public void setCurrentSession(UserSession currentSession) {
+            this.currentUserSession = currentSession;
         }
     }
 

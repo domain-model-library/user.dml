@@ -1,10 +1,10 @@
 package dml.user.service;
 
 import dml.user.entity.UserBan;
-import dml.user.entity.UserLoginState;
+import dml.user.entity.UserCurrentSession;
 import dml.user.entity.UserSession;
 import dml.user.repository.UserBanRepository;
-import dml.user.repository.UserLoginStateRepository;
+import dml.user.repository.UserCurrentSessionRepository;
 import dml.user.repository.UserSessionRepository;
 import dml.user.service.repositoryset.UserBanServiceRepositorySet;
 import dml.user.service.shared.SharedBusinessMethodsBetweenServices;
@@ -16,21 +16,21 @@ public class UserBanService {
                                       UserBan newUserBan) {
 
         UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
-        UserLoginStateRepository<UserLoginState, Object> userLoginStateRepository = repositorySet.getUserLoginStateRepository();
+        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         newUserBan.setUserID(userId);
         userBanRepository.put(newUserBan);
 
-        UserLoginState userLoginState = userLoginStateRepository.take(userId);
-        if (userLoginState == null) {
+        UserCurrentSession userCurrentSession = userCurrentSessionRepository.take(userId);
+        if (userCurrentSession == null) {
             return null;
         }
-        if (userLoginState.getCurrentUserSession() == null) {
+        if (userCurrentSession.getCurrentSession() == null) {
             return null;
         }
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository,
-                userLoginState.getCurrentUserSession().getId());
-        SharedBusinessMethodsBetweenServices.updateUserLoginStateForLogout(userLoginStateRepository, userId);
+                userCurrentSession.getCurrentSession().getId());
+        SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository, userId);
         return removedUserSession;
     }
 
