@@ -41,7 +41,7 @@ public class LoginByOpenIDWithBanSupportService {
 
         OpenIDUserBind openIdUserBind = openIDUserBindRepository.take(openID);
         if (openIdUserBind != null) {
-            boolean ban = SharedBusinessMethodsBetweenServices.checkBan(userBanRepository, openIdUserBind.getUser().getId());
+            boolean ban = SharedBusinessMethodsBetweenServices.checkBan(userBanRepository, openIdUserBind.getUserID());
             if (ban) {
                 result.setBan(true);
                 return result;
@@ -61,7 +61,7 @@ public class LoginByOpenIDWithBanSupportService {
         result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIDGeneratorRepository,
                 userSessionRepository,
                 newUserSession,
-                openIDUserBind.getUser()));
+                openIDUserBind.getUserID()));
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
@@ -84,7 +84,7 @@ public class LoginByOpenIDWithBanSupportService {
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
 
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
-                removedUserSession.getUser().getId());
+                removedUserSession.getUserID());
         return removedUserSession;
 
     }

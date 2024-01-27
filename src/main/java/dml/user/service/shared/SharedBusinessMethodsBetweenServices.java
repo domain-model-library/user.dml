@@ -16,10 +16,10 @@ public class SharedBusinessMethodsBetweenServices {
     public static UserSession createUserSession(UserSessionIDGeneratorRepository userSessionIdGeneratorRepository,
                                                 UserSessionRepository<UserSession> userSessionRepository,
                                                 UserSession newUserSession,
-                                                User user) {
+                                                Object userID) {
         IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
         newUserSession.setId(sessionIdGenerator.generateId());
-        newUserSession.setUser(user);
+        newUserSession.setUserID(userID);
         userSessionRepository.put(newUserSession);
 
         return newUserSession;
@@ -32,22 +32,22 @@ public class SharedBusinessMethodsBetweenServices {
 
 
         UserSession newUserSession = userSessionRepository.find(newUserSessionId);
-        newUserCurrentSession.setUserID(newUserSession.getUser().getId());
-        UserCurrentSession userCurrentSession = userCurrentSessionRepository.takeOrPutIfAbsent(newUserSession.getUser().getId(), newUserCurrentSession);
-        UserSession currentUserSession = userCurrentSession.getCurrentSession();
+        newUserCurrentSession.setUserID(newUserSession.getUserID());
+        UserCurrentSession userCurrentSession = userCurrentSessionRepository.takeOrPutIfAbsent(newUserSession.getUserID(), newUserCurrentSession);
+        String currentUserSessionID = userCurrentSession.getCurrentSessionID();
         String removedUserSessionId = null;
-        if (currentUserSession != null) {
-            UserSession removedUserSession = userSessionRepository.remove(currentUserSession.getId());
+        if (currentUserSessionID != null) {
+            UserSession removedUserSession = userSessionRepository.remove(currentUserSessionID);
             removedUserSessionId = removedUserSession.getId();
         }
-        userCurrentSession.setCurrentSession(newUserSession);
+        userCurrentSession.setCurrentSessionID(newUserSession.getId());
         return removedUserSessionId;
     }
 
     public static void updateUserCurrentSessionForLogout(UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository,
                                                          Object userId) {
         UserCurrentSession userCurrentSession = userCurrentSessionRepository.take(userId);
-        userCurrentSession.setCurrentSession(null);
+        userCurrentSession.setCurrentSessionID(null);
     }
 
     public static boolean checkBan(UserBanRepository<UserBan, Object> userBanRepository,
@@ -79,7 +79,7 @@ public class SharedBusinessMethodsBetweenServices {
                 IdGenerator<Object> userIDGenerator = userIDGeneratorRepository.take();
                 newUser.setId(userIDGenerator.generateId());
                 userRepository.put(newUser);
-                newOpenIDUserBind.setUser(newUser);
+                newOpenIDUserBind.setUserID(newUser.getId());
                 openIDUserBind = newOpenIDUserBind;
 
                 result.setCreateNewUser(true);

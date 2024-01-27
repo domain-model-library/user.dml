@@ -32,7 +32,7 @@ public class UserRegistrationService {
 
         newUser.setId(userIdGeneratorRepository.take().generateId());
         userRepository.put(newUser);
-        newUserAccount.setUser(newUser);
+        newUserAccount.setUserID(newUser.getId());
         result.setNewUser(newUser);
         return result;
     }

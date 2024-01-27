@@ -6,7 +6,7 @@ package dml.user.entity;
 public interface OpenIDUserBind {
     void setOpenID(String openID);
 
-    void setUser(User user);
+    void setUserID(Object userID);
 
-    User getUser();
+    Object getUserID();
 }

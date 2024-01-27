@@ -8,7 +8,7 @@ public interface UserSession {
 
     void setId(String id);
 
-    void setUser(User user);
+    void setUserID(Object userID);
 
-    User getUser();
+    Object getUserID();
 }

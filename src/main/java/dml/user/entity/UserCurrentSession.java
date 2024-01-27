@@ -8,7 +8,7 @@ public interface UserCurrentSession {
 
     Object getUserID();
 
-    UserSession getCurrentSession();
+    String getCurrentSessionID();
 
-    void setCurrentSession(UserSession currentSession);
+    void setCurrentSessionID(String currentSessionID);
 }

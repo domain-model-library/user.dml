@@ -38,7 +38,7 @@ public class LoginByAccountService {
         result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIdGeneratorRepository,
                 userSessionRepository,
                 newUserSession,
-                userAccount.getUser()));
+                userAccount.getUserID()));
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
@@ -62,7 +62,7 @@ public class LoginByAccountService {
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
 
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
-                removedUserSession.getUser().getId());
+                removedUserSession.getUserID());
         return removedUserSession;
     }
 }

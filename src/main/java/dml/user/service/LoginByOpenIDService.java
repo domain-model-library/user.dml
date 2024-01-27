@@ -51,7 +51,7 @@ public class LoginByOpenIDService {
         result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIDGeneratorRepository,
                 userSessionRepository,
                 newUserSession,
-                openIDUserBind.getUser()));
+                openIDUserBind.getUserID()));
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
@@ -73,7 +73,7 @@ public class LoginByOpenIDService {
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
 
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
-                removedUserSession.getUser().getId());
+                removedUserSession.getUserID());
         return removedUserSession;
 
     }

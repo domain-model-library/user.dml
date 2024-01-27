@@ -25,11 +25,11 @@ public class UserBanService {
         if (userCurrentSession == null) {
             return null;
         }
-        if (userCurrentSession.getCurrentSession() == null) {
+        if (userCurrentSession.getCurrentSessionID() == null) {
             return null;
         }
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository,
-                userCurrentSession.getCurrentSession().getId());
+                userCurrentSession.getCurrentSessionID());
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository, userId);
         return removedUserSession;
     }

@@ -30,15 +30,15 @@ public class Login {
                 new TestOpenIdUserBind(),
                 new TestUserCurrentSession());
         assertTrue(openidLoginResult1.isCreateNewUser());
-        assertNotNull(openidLoginResult1.getNewUserSession().getUser());
+        assertNotNull(openidLoginResult1.getNewUserSession().getUserID());
         assertNotNull(openidLoginResult1.getNewUserSession());
         String kickedSessionId1 = openidLoginResult1.getRemovedUserSessionID();
         assertNull(kickedSessionId1);
 
         long currentTime = System.currentTimeMillis();
-        User user1 = AuthService.auth(authServiceRepositorySet,
+        Object userID1 = AuthService.auth(authServiceRepositorySet,
                 openidLoginResult1.getNewUserSession().getId());
-        assertEquals(openidLoginResult1.getNewUserSession().getUser().getId(), user1.getId());
+        assertEquals(openidLoginResult1.getNewUserSession().getUserID(), userID1);
 
         LoginByOpenIDResult openidLoginResult2 = LoginByOpenIDService.loginByOpenID(loginByOpenIDServiceRepositorySet,
                 openId1,
@@ -49,48 +49,48 @@ public class Login {
         assertFalse(openidLoginResult2.isCreateNewUser());
         assertEquals(openidLoginResult1.getNewUserSession().getId(), openidLoginResult2.getRemovedUserSessionID());
 
-        User user2 = AuthService.auth(authServiceRepositorySet,
+        Object userID2 = AuthService.auth(authServiceRepositorySet,
                 openidLoginResult1.getNewUserSession().getId());
-        assertNull(user2);
+        assertNull(userID2);
 
         LoginByOpenIDService.logout(loginByOpenIDServiceRepositorySet,
                 openidLoginResult2.getNewUserSession().getId());
-        User user3 = AuthService.auth(authServiceRepositorySet,
+        Object userID3 = AuthService.auth(authServiceRepositorySet,
                 openidLoginResult2.getNewUserSession().getId());
-        assertNull(user3);
+        assertNull(userID3);
 
         UserBanService.banUser(userBanServiceRepositorySet,
-                user1.getId(),
+                userID1,
                 new TestUserBan()
         );
         UserBanAutoLiftService.setAutoLift(userBanAutoLiftServiceRepositorySet,
-                user1.getId()
+                userID1
                 , new TestAutoLiftTime(currentTime + 60 * 1000L));
-        User user4 = AuthService.auth(authServiceRepositorySet,
+        Object userID4 = AuthService.auth(authServiceRepositorySet,
                 openidLoginResult1.getNewUserSession().getId());
-        assertNull(user4);
+        assertNull(userID4);
 
         currentTime += (30 * 1000L);
 
         boolean isBan1 = UserBanService.checkBan(userBanServiceRepositorySet,
-                user1.getId());
+                userID1);
         assertTrue(isBan1);
         CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult1 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
-                user1.getId(),
+                userID1,
                 currentTime);
         assertFalse(checkAndRemoveLiftTimeResult1.isToLift());
 
         currentTime += (31 * 1000L);
 
         CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult2 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
-                user1.getId(),
+                userID1,
                 currentTime);
         assertTrue(checkAndRemoveLiftTimeResult2.isToLift());
 
         UserBanService.liftBan(userBanServiceRepositorySet,
-                user1.getId());
+                userID1);
         boolean isBan2 = UserBanService.checkBan(userBanServiceRepositorySet,
-                user1.getId());
+                userID1);
         assertFalse(isBan2);
     }
 
@@ -109,16 +109,16 @@ public class Login {
                 new TestUserCurrentSession());
         assertTrue(loginByAccountPasswordResult1.isLoginSuccess());
 
-        User user1 = AuthService.auth(authServiceRepositorySet,
+        Object userID1 = AuthService.auth(authServiceRepositorySet,
                 loginByAccountPasswordResult1.getNewUserSession().getId());
-        assertEquals(loginByAccountPasswordResult1.getNewUserSession().getUser().getId(), user1.getId());
+        assertEquals(loginByAccountPasswordResult1.getNewUserSession().getUserID(), userID1);
 
         LoginByAccountService.logout(loginByAccountServiceRepositorySet,
                 loginByAccountPasswordResult1.getNewUserSession().getId());
 
-        User user2 = AuthService.auth(authServiceRepositorySet,
+        Object userID2 = AuthService.auth(authServiceRepositorySet,
                 loginByAccountPasswordResult1.getNewUserSession().getId());
-        assertNull(user2);
+        assertNull(userID2);
 
         LoginByAccountPasswordResult accountPasswordKickLoginResult1 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
@@ -130,9 +130,9 @@ public class Login {
                 "pass1",
                 new TestSession(),
                 new TestUserCurrentSession());
-        User user3 = AuthService.auth(authServiceRepositorySet,
+        Object userID3 = AuthService.auth(authServiceRepositorySet,
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
-        assertNull(user3);
+        assertNull(userID3);
 
     }
 
@@ -310,7 +310,7 @@ public class Login {
 
     class TestSession implements UserSession {
         String id;
-        TestUser user;
+        Object userID;
 
         @Override
         public String getId() {
@@ -323,19 +323,20 @@ public class Login {
         }
 
         @Override
-        public void setUser(User user) {
-            this.user = (TestUser) user;
+        public void setUserID(Object userID) {
+            this.userID = userID;
         }
 
         @Override
-        public User getUser() {
-            return user;
+        public Object getUserID() {
+            return userID;
         }
+
     }
 
     class TestOpenIdUserBind implements OpenIDUserBind {
         String openID;
-        TestUser user;
+        Object userID;
 
         @Override
         public void setOpenID(String openID) {
@@ -343,19 +344,19 @@ public class Login {
         }
 
         @Override
-        public void setUser(User user) {
-            this.user = (TestUser) user;
+        public void setUserID(Object userID) {
+            this.userID = userID;
         }
 
         @Override
-        public User getUser() {
-            return user;
+        public Object getUserID() {
+            return userID;
         }
     }
 
     class TestUserCurrentSession implements UserCurrentSession {
         long userID;
-        UserSession currentUserSession;
+        String currentUserSessionID;
 
         @Override
         public void setUserID(Object userID) {
@@ -368,14 +369,15 @@ public class Login {
         }
 
         @Override
-        public UserSession getCurrentSession() {
-            return currentUserSession;
+        public String getCurrentSessionID() {
+            return currentUserSessionID;
         }
 
         @Override
-        public void setCurrentSession(UserSession currentSession) {
-            this.currentUserSession = currentSession;
+        public void setCurrentSessionID(String currentSessionID) {
+            this.currentUserSessionID = currentSessionID;
         }
+
     }
 
     class TestUserBan implements UserBan {
@@ -409,7 +411,7 @@ public class Login {
 
     class TestUserAccount extends UserAccountBase {
         String account;
-        TestUser user;
+        Object userID;
 
         public TestUserAccount(String account) {
             this.account = account;
@@ -426,13 +428,13 @@ public class Login {
         }
 
         @Override
-        public User getUser() {
-            return user;
+        public Object getUserID() {
+            return userID;
         }
 
         @Override
-        public void setUser(User user) {
-            this.user = (TestUser) user;
+        public void setUserID(Object userID) {
+            this.userID = userID;
         }
 
     }

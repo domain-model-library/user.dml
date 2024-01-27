@@ -10,7 +10,7 @@ public interface UserAccount {
 
     boolean verifyPassword(String password);
 
-    User getUser();
+    Object getUserID();
 
-    void setUser(User user);
+    void setUserID(Object userID);
 }
