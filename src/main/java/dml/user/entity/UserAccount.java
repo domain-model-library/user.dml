@@ -6,6 +6,8 @@ package dml.user.entity;
 public interface UserAccount {
     void setAccount(String account);
 
+    void setPassword(String password);
+
     boolean verifyPassword(String password);
 
     User getUser();

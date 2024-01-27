@@ -12,6 +12,7 @@ public class UserRegistrationService {
 
     public static RegisterNewUserResult registerNewUser(UserRegistrationServiceRepositorySet repositorySet,
                                                         String account,
+                                                        String password,
                                                         UserAccount newUserAccount,
                                                         User newUser) {
 
@@ -22,6 +23,7 @@ public class UserRegistrationService {
         RegisterNewUserResult result = new RegisterNewUserResult();
 
         newUserAccount.setAccount(account);
+        newUserAccount.setPassword(password);
         UserAccount existsUserAccount = userAccountRepository.putIfAbsent(newUserAccount);
         if (existsUserAccount != null) {
             result.setAccountExists(true);

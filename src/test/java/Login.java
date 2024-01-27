@@ -96,9 +96,10 @@ public class Login {
 
     @Test
     public void accountIdLogin() {
-        RegisterNewUserResult registerNewUserResult1 = UserRegistrationService.registerNewUser(userRegistrationServiceRepositorySet, "account1",
-                new TestUserAccount("account1", "pass1"),
-                new TestUser());
+        RegisterNewUserResult registerNewUserResult1 = UserRegistrationService
+                .registerNewUser(userRegistrationServiceRepositorySet, "account1", "pass1",
+                        new TestUserAccount("account1"),
+                        new TestUser());
         assertFalse(registerNewUserResult1.isAccountExists());
 
         LoginByAccountPasswordResult loginByAccountPasswordResult1 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
@@ -410,14 +411,18 @@ public class Login {
         String account;
         TestUser user;
 
-        public TestUserAccount(String account, String password) {
+        public TestUserAccount(String account) {
             this.account = account;
-            this.password = password;
         }
 
         @Override
         public void setAccount(String account) {
             this.account = account;
+        }
+
+        @Override
+        public void setPassword(String password) {
+            this.password = password;
         }
 
         @Override
