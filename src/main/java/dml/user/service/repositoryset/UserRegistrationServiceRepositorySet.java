@@ -9,7 +9,7 @@ import dml.user.repository.UserRepository;
 public interface UserRegistrationServiceRepositorySet {
     UserIDGeneratorRepository getUserIdGeneratorRepository();
 
-    UserRepository<User, Object> getUserRepository();
+    UserRepository getUserRepository();
 
-    UserAccountRepository<UserAccount> getUserAccountRepository();
+    UserAccountRepository getUserAccountRepository();
 }

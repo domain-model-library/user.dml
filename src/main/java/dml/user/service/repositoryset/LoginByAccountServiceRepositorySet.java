@@ -12,11 +12,11 @@ import dml.user.repository.UserSessionRepository;
  * @author zheng chengdong
  */
 public interface LoginByAccountServiceRepositorySet {
-    UserAccountRepository<UserAccount> getUserAccountRepository();
+    UserAccountRepository getUserAccountRepository();
 
-    UserSessionRepository<UserSession> getUserSessionRepository();
+    UserSessionRepository getUserSessionRepository();
 
     UserSessionIDGeneratorRepository getUserSessionIdGeneratorRepository();
 
-    UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository();
+    UserCurrentSessionRepository getUserCurrentSessionRepository();
 }

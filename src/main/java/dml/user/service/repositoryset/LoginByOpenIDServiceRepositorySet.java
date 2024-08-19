@@ -10,15 +10,15 @@ import dml.user.repository.*;
  * @author zheng chengdong
  */
 public interface LoginByOpenIDServiceRepositorySet {
-    OpenIDUserBindRepository<OpenIDUserBind> getOpenIDUserBindRepository();
+    OpenIDUserBindRepository getOpenIDUserBindRepository();
 
     UserIDGeneratorRepository getUserIDGeneratorRepository();
 
-    UserRepository<User, Object> getUserRepository();
+    UserRepository getUserRepository();
 
-    UserSessionRepository<UserSession> getUserSessionRepository();
+    UserSessionRepository getUserSessionRepository();
 
     UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository();
 
-    UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository();
+    UserCurrentSessionRepository getUserCurrentSessionRepository();
 }

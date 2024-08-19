@@ -7,6 +7,6 @@ import dml.user.repository.AutoLiftTimeRepository;
  * @author zheng chengdong
  */
 public interface UserBanAutoLiftServiceRepositorySet {
-    AutoLiftTimeRepository<AutoLiftTime, Object> getAutoLiftTimeRepository();
+    AutoLiftTimeRepository getAutoLiftTimeRepository();
 
 }

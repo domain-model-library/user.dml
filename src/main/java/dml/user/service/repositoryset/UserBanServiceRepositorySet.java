@@ -8,9 +8,9 @@ import dml.user.repository.UserCurrentSessionRepository;
 import dml.user.repository.UserSessionRepository;
 
 public interface UserBanServiceRepositorySet {
-    UserBanRepository<UserBan, Object> getUserBanRepository();
+    UserBanRepository getUserBanRepository();
 
-    UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository();
+    UserCurrentSessionRepository getUserCurrentSessionRepository();
 
-    UserSessionRepository<UserSession> getUserSessionRepository();
+    UserSessionRepository getUserSessionRepository();
 }

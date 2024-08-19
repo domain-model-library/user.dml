@@ -152,7 +152,7 @@ public class Login {
 
     UserRegistrationServiceRepositorySet userRegistrationServiceRepositorySet = new UserRegistrationServiceRepositorySet() {
         @Override
-        public UserAccountRepository<UserAccount> getUserAccountRepository() {
+        public UserAccountRepository getUserAccountRepository() {
             return userAccountRepository;
         }
 
@@ -162,19 +162,19 @@ public class Login {
         }
 
         @Override
-        public UserRepository<User, Object> getUserRepository() {
+        public UserRepository getUserRepository() {
             return userRepository;
         }
     };
 
     LoginByAccountServiceRepositorySet loginByAccountServiceRepositorySet = new LoginByAccountServiceRepositorySet() {
         @Override
-        public UserAccountRepository<UserAccount> getUserAccountRepository() {
+        public UserAccountRepository getUserAccountRepository() {
             return userAccountRepository;
         }
 
         @Override
-        public UserSessionRepository<UserSession> getUserSessionRepository() {
+        public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
         }
 
@@ -184,7 +184,7 @@ public class Login {
         }
 
         @Override
-        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+        public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
         }
     };
@@ -193,7 +193,7 @@ public class Login {
 
 
         @Override
-        public OpenIDUserBindRepository<OpenIDUserBind> getOpenIDUserBindRepository() {
+        public OpenIDUserBindRepository getOpenIDUserBindRepository() {
             return openIdUserBindRepository;
         }
 
@@ -203,12 +203,12 @@ public class Login {
         }
 
         @Override
-        public UserRepository<User, Object> getUserRepository() {
+        public UserRepository getUserRepository() {
             return userRepository;
         }
 
         @Override
-        public UserSessionRepository<UserSession> getUserSessionRepository() {
+        public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
         }
 
@@ -218,19 +218,19 @@ public class Login {
         }
 
         @Override
-        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+        public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
         }
     };
 
     LoginByOpenIDWithBanSupportServiceRepositorySet loginByOpenIDWithBanSupportServiceRepositorySet = new LoginByOpenIDWithBanSupportServiceRepositorySet() {
         @Override
-        public OpenIDUserBindRepository<OpenIDUserBind> getOpenIDUserBindRepository() {
+        public OpenIDUserBindRepository getOpenIDUserBindRepository() {
             return openIdUserBindRepository;
         }
 
         @Override
-        public UserBanRepository<UserBan, Object> getUserBanRepository() {
+        public UserBanRepository getUserBanRepository() {
             return userBanRepository;
         }
 
@@ -240,12 +240,12 @@ public class Login {
         }
 
         @Override
-        public UserRepository<User, Object> getUserRepository() {
+        public UserRepository getUserRepository() {
             return userRepository;
         }
 
         @Override
-        public UserSessionRepository<UserSession> getUserSessionRepository() {
+        public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
         }
 
@@ -255,7 +255,7 @@ public class Login {
         }
 
         @Override
-        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+        public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
         }
     };
@@ -263,31 +263,31 @@ public class Login {
     AuthServiceRepositorySet authServiceRepositorySet = new AuthServiceRepositorySet() {
 
         @Override
-        public UserSessionRepository<UserSession> getUserSessionRepository() {
+        public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
         }
     };
 
     UserBanServiceRepositorySet userBanServiceRepositorySet = new UserBanServiceRepositorySet() {
         @Override
-        public UserBanRepository<UserBan, Object> getUserBanRepository() {
+        public UserBanRepository getUserBanRepository() {
             return userBanRepository;
         }
 
         @Override
-        public UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository() {
+        public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
         }
 
         @Override
-        public UserSessionRepository<UserSession> getUserSessionRepository() {
+        public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
         }
     };
 
     UserBanAutoLiftServiceRepositorySet userBanAutoLiftServiceRepositorySet = new UserBanAutoLiftServiceRepositorySet() {
         @Override
-        public AutoLiftTimeRepository<AutoLiftTime, Object> getAutoLiftTimeRepository() {
+        public AutoLiftTimeRepository getAutoLiftTimeRepository() {
             return autoLiftTimeRepository;
         }
     };

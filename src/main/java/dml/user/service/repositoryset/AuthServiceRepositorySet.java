@@ -5,5 +5,5 @@ import dml.user.repository.UserSessionRepository;
 
 public interface AuthServiceRepositorySet {
 
-    UserSessionRepository<UserSession> getUserSessionRepository();
+    UserSessionRepository getUserSessionRepository();
 }
