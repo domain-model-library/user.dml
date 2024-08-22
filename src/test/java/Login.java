@@ -140,15 +140,15 @@ public class Login {
     UserIDGeneratorRepository userIdGeneratorRepository = TestCommonSingletonRepository.instance(UserIDGeneratorRepository.class,
             new LongIdGenerator(1L) {
             });
-    UserRepository<User, Object> userRepository = TestCommonRepository.instance(UserRepository.class);
-    UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = TestCommonRepository.instance(UserCurrentSessionRepository.class);
-    UserSessionRepository<UserSession> userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
+    UserRepository userRepository = TestCommonRepository.instance(UserRepository.class);
+    UserCurrentSessionRepository userCurrentSessionRepository = TestCommonRepository.instance(UserCurrentSessionRepository.class);
+    UserSessionRepository userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
     UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = TestCommonSingletonRepository.instance(UserSessionIDGeneratorRepository.class,
             new UUIDStyleRandomStringIdGenerator() {
             });
-    UserBanRepository<UserBan, Object> userBanRepository = TestCommonRepository.instance(UserBanRepository.class);
-    AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
-    UserAccountRepository<UserAccount> userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
+    UserBanRepository userBanRepository = TestCommonRepository.instance(UserBanRepository.class);
+    AutoLiftTimeRepository autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
+    UserAccountRepository userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
 
     UserRegistrationServiceRepositorySet userRegistrationServiceRepositorySet = new UserRegistrationServiceRepositorySet() {
         @Override
