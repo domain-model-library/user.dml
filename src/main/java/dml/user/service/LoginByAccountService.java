@@ -1,5 +1,7 @@
 package dml.user.service;
 
+import dml.keepalive.entity.AliveKeeper;
+import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.UserAccount;
 import dml.user.entity.UserCurrentSession;
 import dml.user.entity.UserSession;
@@ -15,13 +17,16 @@ public class LoginByAccountService {
     public static LoginByAccountPasswordResult loginByAccountPassword(LoginByAccountServiceRepositorySet repositorySet,
                                                                       String account,
                                                                       String password,
+                                                                      long currentTime,
                                                                       UserSession newUserSession,
+                                                                      AliveKeeper newSessionAliveKeeper,
                                                                       UserCurrentSession newUserCurrentSession) {
 
         UserAccountRepository<UserAccount> userAccountRepository = repositorySet.getUserAccountRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = repositorySet.getUserSessionIdGeneratorRepository();
         UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
+        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
         LoginByAccountPasswordResult result = new LoginByAccountPasswordResult();
 
@@ -37,8 +42,11 @@ public class LoginByAccountService {
 
         result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIdGeneratorRepository,
                 userSessionRepository,
+                sessionAliveKeeperRepository,
                 newUserSession,
-                userAccount.getUserID()));
+                newSessionAliveKeeper,
+                userAccount.getUserID(),
+                currentTime));
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
@@ -58,8 +66,10 @@ public class LoginByAccountService {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
+        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
-        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
+        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, sessionAliveKeeperRepository,
+                token);
 
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
                 removedUserSession.getUserID());

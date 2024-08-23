@@ -5,7 +5,7 @@ import dml.user.entity.AutoLiftTime;
 /**
  * @author zheng chengdong
  */
-public class CheckAndRemoveLiftTimeResult {
+public class CheckToLiftAndUnsetAutoLiftResult {
     private boolean toLift;
     private AutoLiftTime autoLiftTime;
 

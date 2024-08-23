@@ -2,11 +2,13 @@ import dml.common.repository.TestCommonRepository;
 import dml.common.repository.TestCommonSingletonRepository;
 import dml.id.entity.LongIdGenerator;
 import dml.id.entity.UUIDStyleRandomStringIdGenerator;
+import dml.keepalive.entity.AliveKeeperBase;
+import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.*;
 import dml.user.service.repositoryset.*;
-import dml.user.service.result.CheckAndRemoveLiftTimeResult;
+import dml.user.service.result.CheckToLiftAndUnsetAutoLiftResult;
 import dml.user.service.result.LoginByAccountPasswordResult;
 import dml.user.service.result.LoginByOpenIDResult;
 import dml.user.service.result.RegisterNewUserResult;
@@ -22,11 +24,15 @@ public class Login {
     @Test
     public void openIdLogin() {
 
+        long currentTime = System.currentTimeMillis();
+        long sessionKeepAliveInterval = 1000L;
         String openId1 = "1";
         LoginByOpenIDResult openidLoginResult1 = LoginByOpenIDService.loginByOpenID(loginByOpenIDServiceRepositorySet,
                 openId1,
+                currentTime,
                 new TestUser(),
                 new TestSession(),
+                new TestSessionAliveKeeper(),
                 new TestOpenIdUserBind(),
                 new TestUserCurrentSession());
         assertTrue(openidLoginResult1.isCreateNewUser());
@@ -35,15 +41,16 @@ public class Login {
         String kickedSessionId1 = openidLoginResult1.getRemovedUserSessionID();
         assertNull(kickedSessionId1);
 
-        long currentTime = System.currentTimeMillis();
         Object userID1 = AuthService.auth(authServiceRepositorySet,
                 openidLoginResult1.getNewUserSession().getId());
         assertEquals(openidLoginResult1.getNewUserSession().getUserID(), userID1);
 
         LoginByOpenIDResult openidLoginResult2 = LoginByOpenIDService.loginByOpenID(loginByOpenIDServiceRepositorySet,
                 openId1,
+                currentTime,
                 new TestUser(),
                 new TestSession(),
+                new TestSessionAliveKeeper(),
                 new TestOpenIdUserBind(),
                 new TestUserCurrentSession());
         assertFalse(openidLoginResult2.isCreateNewUser());
@@ -75,17 +82,17 @@ public class Login {
         boolean isBan1 = UserBanService.checkBan(userBanServiceRepositorySet,
                 userID1);
         assertTrue(isBan1);
-        CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult1 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
+        CheckToLiftAndUnsetAutoLiftResult checkToLiftAndUnsetAutoLiftResult1 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
                 userID1,
                 currentTime);
-        assertFalse(checkAndRemoveLiftTimeResult1.isToLift());
+        assertFalse(checkToLiftAndUnsetAutoLiftResult1.isToLift());
 
         currentTime += (31 * 1000L);
 
-        CheckAndRemoveLiftTimeResult checkAndRemoveLiftTimeResult2 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
+        CheckToLiftAndUnsetAutoLiftResult checkToLiftAndUnsetAutoLiftResult2 = UserBanAutoLiftService.checkToLiftAndUnsetAutoLift(userBanAutoLiftServiceRepositorySet,
                 userID1,
                 currentTime);
-        assertTrue(checkAndRemoveLiftTimeResult2.isToLift());
+        assertTrue(checkToLiftAndUnsetAutoLiftResult2.isToLift());
 
         UserBanService.liftBan(userBanServiceRepositorySet,
                 userID1);
@@ -96,6 +103,9 @@ public class Login {
 
     @Test
     public void accountIdLogin() {
+        long currentTime = System.currentTimeMillis();
+        long sessionKeepAliveInterval = 1000L;
+
         RegisterNewUserResult registerNewUserResult1 = UserRegistrationService
                 .registerNewUser(userRegistrationServiceRepositorySet, "account1", "pass1",
                         new TestUserAccount("account1"),
@@ -105,7 +115,9 @@ public class Login {
         LoginByAccountPasswordResult loginByAccountPasswordResult1 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
                 "pass1",
+                currentTime,
                 new TestSession(),
+                new TestSessionAliveKeeper(),
                 new TestUserCurrentSession());
         assertTrue(loginByAccountPasswordResult1.isLoginSuccess());
 
@@ -123,12 +135,16 @@ public class Login {
         LoginByAccountPasswordResult accountPasswordKickLoginResult1 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
                 "pass1",
+                currentTime,
                 new TestSession(),
+                new TestSessionAliveKeeper(),
                 new TestUserCurrentSession());
         LoginByAccountPasswordResult accountPasswordKickLoginResult2 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
                 "pass1",
+                currentTime,
                 new TestSession(),
+                new TestSessionAliveKeeper(),
                 new TestUserCurrentSession());
         Object userID3 = AuthService.auth(authServiceRepositorySet,
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
@@ -143,6 +159,7 @@ public class Login {
     UserRepository userRepository = TestCommonRepository.instance(UserRepository.class);
     UserCurrentSessionRepository userCurrentSessionRepository = TestCommonRepository.instance(UserCurrentSessionRepository.class);
     UserSessionRepository userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
+    AliveKeeperRepository sessionAliveKeeperRepository = TestCommonRepository.instance(AliveKeeperRepository.class);
     UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = TestCommonSingletonRepository.instance(UserSessionIDGeneratorRepository.class,
             new UUIDStyleRandomStringIdGenerator() {
             });
@@ -187,6 +204,13 @@ public class Login {
         public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
         }
+
+        @Override
+        public AliveKeeperRepository getSessionAliveKeeperRepository() {
+            return sessionAliveKeeperRepository;
+        }
+
+
     };
 
     LoginByOpenIDServiceRepositorySet loginByOpenIDServiceRepositorySet = new LoginByOpenIDServiceRepositorySet() {
@@ -220,6 +244,11 @@ public class Login {
         @Override
         public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
+        }
+
+        @Override
+        public AliveKeeperRepository getSessionAliveKeeperRepository() {
+            return sessionAliveKeeperRepository;
         }
     };
 
@@ -258,6 +287,11 @@ public class Login {
         public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
         }
+
+        @Override
+        public AliveKeeperRepository getSessionAliveKeeperRepository() {
+            return sessionAliveKeeperRepository;
+        }
     };
 
     AuthServiceRepositorySet authServiceRepositorySet = new AuthServiceRepositorySet() {
@@ -282,6 +316,11 @@ public class Login {
         @Override
         public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
+        }
+
+        @Override
+        public AliveKeeperRepository getSessionAliveKeeperRepository() {
+            return sessionAliveKeeperRepository;
         }
     };
 
@@ -332,6 +371,20 @@ public class Login {
             return userID;
         }
 
+    }
+
+    class TestSessionAliveKeeper extends AliveKeeperBase {
+        String sessionId;
+
+        @Override
+        public void setId(Object id) {
+            this.sessionId = (String) id;
+        }
+
+        @Override
+        public Object getId() {
+            return sessionId;
+        }
     }
 
     class TestOpenIdUserBind implements OpenIDUserBind {

@@ -1,5 +1,7 @@
 package dml.user.service;
 
+import dml.keepalive.entity.AliveKeeper;
+import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.UserBan;
 import dml.user.entity.UserCurrentSession;
 import dml.user.entity.UserSession;
@@ -18,6 +20,8 @@ public class UserBanService {
         UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
         UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
+        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
+
         newUserBan.setUserID(userId);
         userBanRepository.put(newUserBan);
 
@@ -29,6 +33,7 @@ public class UserBanService {
             return null;
         }
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository,
+                sessionAliveKeeperRepository,
                 userCurrentSession.getCurrentSessionID());
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository, userId);
         return removedUserSession;

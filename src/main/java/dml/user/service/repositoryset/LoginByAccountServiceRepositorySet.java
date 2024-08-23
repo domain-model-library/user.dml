@@ -1,5 +1,7 @@
 package dml.user.service.repositoryset;
 
+import dml.keepalive.entity.AliveKeeper;
+import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.UserAccount;
 import dml.user.entity.UserCurrentSession;
 import dml.user.entity.UserSession;
@@ -19,4 +21,6 @@ public interface LoginByAccountServiceRepositorySet {
     UserSessionIDGeneratorRepository getUserSessionIdGeneratorRepository();
 
     UserCurrentSessionRepository getUserCurrentSessionRepository();
+
+    AliveKeeperRepository getSessionAliveKeeperRepository();
 }

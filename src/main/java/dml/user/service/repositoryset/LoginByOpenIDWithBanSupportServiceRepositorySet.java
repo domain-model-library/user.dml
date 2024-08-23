@@ -1,20 +1,22 @@
 package dml.user.service.repositoryset;
 
-import dml.user.entity.*;
+import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.repository.*;
 
 public interface LoginByOpenIDWithBanSupportServiceRepositorySet {
-    OpenIDUserBindRepository<OpenIDUserBind> getOpenIDUserBindRepository();
+    OpenIDUserBindRepository getOpenIDUserBindRepository();
 
-    UserBanRepository<UserBan, Object> getUserBanRepository();
+    UserBanRepository getUserBanRepository();
 
     UserIDGeneratorRepository getUserIDGeneratorRepository();
 
     UserRepository getUserRepository();
 
-    UserSessionRepository<UserSession> getUserSessionRepository();
+    UserSessionRepository getUserSessionRepository();
 
     UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository();
 
-    UserCurrentSessionRepository<UserCurrentSession, Object> getUserCurrentSessionRepository();
+    UserCurrentSessionRepository getUserCurrentSessionRepository();
+
+    AliveKeeperRepository getSessionAliveKeeperRepository();
 }

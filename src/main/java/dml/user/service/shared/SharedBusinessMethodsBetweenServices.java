@@ -1,6 +1,10 @@
 package dml.user.service.shared;
 
 import dml.id.entity.IdGenerator;
+import dml.keepalive.entity.AliveKeeper;
+import dml.keepalive.repository.AliveKeeperRepository;
+import dml.keepalive.service.KeepAliveService;
+import dml.keepalive.service.repositoryset.AliveKeeperServiceRepositorySet;
 import dml.user.entity.*;
 import dml.user.repository.*;
 
@@ -9,18 +13,38 @@ import dml.user.repository.*;
  */
 public class SharedBusinessMethodsBetweenServices {
     public static UserSession logout(UserSessionRepository<UserSession> userSessionRepository,
+                                     AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository,
                                      String token) {
-        return userSessionRepository.remove(token);
+        UserSession removedUserSession = userSessionRepository.remove(token);
+        if (removedUserSession != null) {
+            KeepAliveService.removeAliveKeeper(new AliveKeeperServiceRepositorySet() {
+                @Override
+                public AliveKeeperRepository getAliveKeeperRepository() {
+                    return sessionAliveKeeperRepository;
+                }
+            }, token);
+        }
+        return removedUserSession;
     }
 
     public static UserSession createUserSession(UserSessionIDGeneratorRepository userSessionIdGeneratorRepository,
                                                 UserSessionRepository<UserSession> userSessionRepository,
+                                                AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository,
                                                 UserSession newUserSession,
-                                                Object userID) {
+                                                AliveKeeper newSessionAliveKeeper,
+                                                Object userID,
+                                                long currentTime) {
         IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
         newUserSession.setId(sessionIdGenerator.generateId());
         newUserSession.setUserID(userID);
         userSessionRepository.put(newUserSession);
+
+        KeepAliveService.createAliveKeeper(new AliveKeeperServiceRepositorySet() {
+            @Override
+            public AliveKeeperRepository getAliveKeeperRepository() {
+                return sessionAliveKeeperRepository;
+            }
+        }, newUserSession.getId(), currentTime, newSessionAliveKeeper);
 
         return newUserSession;
     }

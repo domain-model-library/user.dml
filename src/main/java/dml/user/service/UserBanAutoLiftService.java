@@ -3,7 +3,7 @@ package dml.user.service;
 import dml.user.entity.AutoLiftTime;
 import dml.user.repository.AutoLiftTimeRepository;
 import dml.user.service.repositoryset.UserBanAutoLiftServiceRepositorySet;
-import dml.user.service.result.CheckAndRemoveLiftTimeResult;
+import dml.user.service.result.CheckToLiftAndUnsetAutoLiftResult;
 
 /**
  * @author zheng chengdong
@@ -18,13 +18,13 @@ public class UserBanAutoLiftService {
         autoLiftTimeRepository.put(newAutoLiftTime);
     }
 
-    public static CheckAndRemoveLiftTimeResult checkToLiftAndUnsetAutoLift(UserBanAutoLiftServiceRepositorySet repositorySet,
-                                                                           Object userId,
-                                                                           long currentTime) {
+    public static CheckToLiftAndUnsetAutoLiftResult checkToLiftAndUnsetAutoLift(UserBanAutoLiftServiceRepositorySet repositorySet,
+                                                                                Object userId,
+                                                                                long currentTime) {
 
         AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
 
-        CheckAndRemoveLiftTimeResult result = new CheckAndRemoveLiftTimeResult();
+        CheckToLiftAndUnsetAutoLiftResult result = new CheckToLiftAndUnsetAutoLiftResult();
 
         AutoLiftTime autoLiftTime = autoLiftTimeRepository.take(userId);
         if (autoLiftTime.timeToLift(currentTime)) {

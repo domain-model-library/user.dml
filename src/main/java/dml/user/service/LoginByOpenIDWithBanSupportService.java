@@ -1,5 +1,7 @@
 package dml.user.service;
 
+import dml.keepalive.entity.AliveKeeper;
+import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.*;
 import dml.user.repository.*;
 import dml.user.service.repositoryset.LoginByOpenIDServiceRepositorySet;
@@ -24,8 +26,10 @@ public class LoginByOpenIDWithBanSupportService {
      */
     public static LoginByOpenIDWithBanCheckResult loginByOpenIDWithBanCheck(LoginByOpenIDWithBanSupportServiceRepositorySet repositorySet,
                                                                             String openID,
+                                                                            long currentTime,
                                                                             User newUser,
                                                                             UserSession newUserSession,
+                                                                            AliveKeeper newSessionAliveKeeper,
                                                                             OpenIDUserBind newOpenIDUserBind,
                                                                             UserCurrentSession newUserCurrentSession) {
 
@@ -36,6 +40,7 @@ public class LoginByOpenIDWithBanSupportService {
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
         UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
+        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
         LoginByOpenIDWithBanCheckResult result = new LoginByOpenIDWithBanCheckResult();
 
@@ -60,8 +65,11 @@ public class LoginByOpenIDWithBanSupportService {
         OpenIDUserBind openIDUserBind = sharedLoginByOpenIDResult.getOpenIDUserBind();
         result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIDGeneratorRepository,
                 userSessionRepository,
+                sessionAliveKeeperRepository,
                 newUserSession,
-                openIDUserBind.getUserID()));
+                newSessionAliveKeeper,
+                openIDUserBind.getUserID(),
+                currentTime));
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
@@ -80,8 +88,10 @@ public class LoginByOpenIDWithBanSupportService {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
+        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
-        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
+        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository,
+                sessionAliveKeeperRepository, token);
 
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
                 removedUserSession.getUserID());

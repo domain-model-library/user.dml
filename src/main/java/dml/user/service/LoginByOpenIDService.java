@@ -1,5 +1,7 @@
 package dml.user.service;
 
+import dml.keepalive.entity.AliveKeeper;
+import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.OpenIDUserBind;
 import dml.user.entity.User;
 import dml.user.entity.UserCurrentSession;
@@ -24,8 +26,10 @@ public class LoginByOpenIDService {
      */
     public static LoginByOpenIDResult loginByOpenID(LoginByOpenIDServiceRepositorySet repositorySet,
                                                     String openID,
+                                                    long currentTime,
                                                     User newUser,
                                                     UserSession newUserSession,
+                                                    AliveKeeper newSessionAliveKeeper,
                                                     OpenIDUserBind newOpenIDUserBind,
                                                     UserCurrentSession newUserCurrentSession) {
 
@@ -35,6 +39,7 @@ public class LoginByOpenIDService {
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
         UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
+        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
         LoginByOpenIDResult result = new LoginByOpenIDResult();
 
@@ -50,8 +55,12 @@ public class LoginByOpenIDService {
         OpenIDUserBind openIDUserBind = sharedLoginByOpenIDResult.getOpenIDUserBind();
         result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIDGeneratorRepository,
                 userSessionRepository,
+                sessionAliveKeeperRepository,
                 newUserSession,
-                openIDUserBind.getUserID()));
+                newSessionAliveKeeper,
+                openIDUserBind.getUserID(),
+                currentTime));
+
 
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
@@ -69,8 +78,10 @@ public class LoginByOpenIDService {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
+        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
-        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, token);
+        UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository,
+                sessionAliveKeeperRepository, token);
 
         SharedBusinessMethodsBetweenServices.updateUserCurrentSessionForLogout(userCurrentSessionRepository,
                 removedUserSession.getUserID());
