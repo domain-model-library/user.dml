@@ -65,6 +65,7 @@ public class LoginByOpenIDService {
         String removedUserSessionID = SharedBusinessMethodsBetweenServices.newLoginKickOldLogin(
                 userSessionRepository,
                 userCurrentSessionRepository,
+                sessionAliveKeeperRepository,
                 newUserSession.getId(),
                 newUserCurrentSession
         );

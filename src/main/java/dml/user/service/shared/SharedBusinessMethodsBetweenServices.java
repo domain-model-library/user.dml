@@ -51,6 +51,7 @@ public class SharedBusinessMethodsBetweenServices {
 
     public static String newLoginKickOldLogin(UserSessionRepository<UserSession> userSessionRepository,
                                               UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository,
+                                              AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository,
                                               String newUserSessionId,
                                               UserCurrentSession newUserCurrentSession) {
 
@@ -63,6 +64,14 @@ public class SharedBusinessMethodsBetweenServices {
         if (currentUserSessionID != null) {
             UserSession removedUserSession = userSessionRepository.remove(currentUserSessionID);
             removedUserSessionId = removedUserSession.getId();
+            if (removedUserSession != null) {
+                KeepAliveService.removeAliveKeeper(new AliveKeeperServiceRepositorySet() {
+                    @Override
+                    public AliveKeeperRepository getAliveKeeperRepository() {
+                        return sessionAliveKeeperRepository;
+                    }
+                }, removedUserSessionId);
+            }
         }
         userCurrentSession.setCurrentSessionID(newUserSession.getId());
         return removedUserSessionId;
