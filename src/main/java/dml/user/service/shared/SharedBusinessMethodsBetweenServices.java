@@ -63,8 +63,8 @@ public class SharedBusinessMethodsBetweenServices {
         String removedUserSessionId = null;
         if (currentUserSessionID != null) {
             UserSession removedUserSession = userSessionRepository.remove(currentUserSessionID);
-            removedUserSessionId = removedUserSession.getId();
             if (removedUserSession != null) {
+                removedUserSessionId = removedUserSession.getId();
                 KeepAliveService.removeAliveKeeper(new AliveKeeperServiceRepositorySet() {
                     @Override
                     public AliveKeeperRepository getAliveKeeperRepository() {
