@@ -1,6 +1,5 @@
 package dml.user.service;
 
-import dml.keepalive.entity.AliveKeeper;
 import dml.keepalive.repository.AliveKeeperRepository;
 import dml.keepalive.service.KeepAliveService;
 import dml.keepalive.service.repositoryset.AliveKeeperServiceRepositorySet;
@@ -25,7 +24,6 @@ public class UserSessionCleanupService {
                                                         String sessionId,
                                                         long currentTime,
                                                         long sessionKeepAliveInterval) {
-        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
 
         boolean alive = KeepAliveService.isAlive(getAliveKeeperServiceRepositorySet(repositorySet),

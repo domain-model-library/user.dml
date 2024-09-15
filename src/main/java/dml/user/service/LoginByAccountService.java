@@ -1,14 +1,10 @@
 package dml.user.service;
 
-import dml.keepalive.entity.AliveKeeper;
 import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.UserAccount;
 import dml.user.entity.UserSession;
 import dml.user.entity.UserSessionAliveKeeper;
-import dml.user.repository.UserAccountRepository;
-import dml.user.repository.UserCurrentSessionRepository;
-import dml.user.repository.UserSessionIDGeneratorRepository;
-import dml.user.repository.UserSessionRepository;
+import dml.user.repository.*;
 import dml.user.service.repositoryset.LoginByAccountServiceRepositorySet;
 import dml.user.service.result.LoginByAccountPasswordResult;
 import dml.user.service.shared.SharedBusinessMethodsBetweenServices;
@@ -63,7 +59,7 @@ public class LoginByAccountService {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
-        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
+        UserSessionAliveKeeperRepository sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository, sessionAliveKeeperRepository,
                 token);

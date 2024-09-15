@@ -1,7 +1,6 @@
 package dml.user.service.shared;
 
 import dml.id.entity.IdGenerator;
-import dml.keepalive.entity.AliveKeeper;
 import dml.keepalive.repository.AliveKeeperRepository;
 import dml.keepalive.service.KeepAliveService;
 import dml.keepalive.service.repositoryset.AliveKeeperServiceRepositorySet;
@@ -13,7 +12,7 @@ import dml.user.repository.*;
  */
 public class SharedBusinessMethodsBetweenServices {
     public static UserSession logout(UserSessionRepository<UserSession> userSessionRepository,
-                                     AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository,
+                                     UserSessionAliveKeeperRepository sessionAliveKeeperRepository,
                                      String token) {
         UserSession removedUserSession = userSessionRepository.remove(token);
         if (removedUserSession != null) {

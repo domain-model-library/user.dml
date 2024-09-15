@@ -1,8 +1,8 @@
 package dml.user.service.repositoryset;
 
-import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.repository.UserBanRepository;
 import dml.user.repository.UserCurrentSessionRepository;
+import dml.user.repository.UserSessionAliveKeeperRepository;
 import dml.user.repository.UserSessionRepository;
 
 public interface UserBanServiceRepositorySet {
@@ -12,5 +12,5 @@ public interface UserBanServiceRepositorySet {
 
     UserSessionRepository getUserSessionRepository();
 
-    AliveKeeperRepository getSessionAliveKeeperRepository();
+    UserSessionAliveKeeperRepository getSessionAliveKeeperRepository();
 }

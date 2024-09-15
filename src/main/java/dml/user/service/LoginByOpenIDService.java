@@ -1,6 +1,5 @@
 package dml.user.service;
 
-import dml.keepalive.entity.AliveKeeper;
 import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.OpenIDUserBind;
 import dml.user.entity.User;
@@ -72,7 +71,7 @@ public class LoginByOpenIDService {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
-        AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
+        UserSessionAliveKeeperRepository sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository,
                 sessionAliveKeeperRepository, token);
