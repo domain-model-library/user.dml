@@ -12,9 +12,11 @@ public class UserBanAutoLiftService {
 
     public static void setAutoLift(UserBanAutoLiftServiceRepositorySet repositorySet,
                                    Object userId,
-                                   AutoLiftTime newAutoLiftTime) {
-        AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
+                                   long liftTime) {
+        AutoLiftTimeRepository autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
+        AutoLiftTime newAutoLiftTime = new AutoLiftTime();
         newAutoLiftTime.setUserID(userId);
+        newAutoLiftTime.setLiftTime(liftTime);
         autoLiftTimeRepository.put(newAutoLiftTime);
     }
 
@@ -22,7 +24,7 @@ public class UserBanAutoLiftService {
                                                                                 Object userId,
                                                                                 long currentTime) {
 
-        AutoLiftTimeRepository<AutoLiftTime, Object> autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
+        AutoLiftTimeRepository autoLiftTimeRepository = repositorySet.getAutoLiftTimeRepository();
 
         CheckToLiftAndUnsetAutoLiftResult result = new CheckToLiftAndUnsetAutoLiftResult();
 

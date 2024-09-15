@@ -18,7 +18,7 @@ public class UserBanService {
                                       UserBan newUserBan) {
 
         UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
-        UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
+        UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
 

@@ -29,9 +29,8 @@ public class SharedBusinessMethodsBetweenServices {
 
     public static UserSession createUserSession(UserSessionIDGeneratorRepository userSessionIdGeneratorRepository,
                                                 UserSessionRepository<UserSession> userSessionRepository,
-                                                AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository,
+                                                AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository,
                                                 UserSession newUserSession,
-                                                AliveKeeper newSessionAliveKeeper,
                                                 Object userID,
                                                 long currentTime) {
         IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
@@ -44,19 +43,19 @@ public class SharedBusinessMethodsBetweenServices {
             public AliveKeeperRepository getAliveKeeperRepository() {
                 return sessionAliveKeeperRepository;
             }
-        }, newUserSession.getId(), currentTime, newSessionAliveKeeper);
+        }, newUserSession.getId(), currentTime, new UserSessionAliveKeeper());
 
         return newUserSession;
     }
 
     public static String newLoginKickOldLogin(UserSessionRepository<UserSession> userSessionRepository,
-                                              UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository,
-                                              AliveKeeperRepository<AliveKeeper, String> sessionAliveKeeperRepository,
-                                              String newUserSessionId,
-                                              UserCurrentSession newUserCurrentSession) {
+                                              UserCurrentSessionRepository userCurrentSessionRepository,
+                                              AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository,
+                                              String newUserSessionId) {
 
 
         UserSession newUserSession = userSessionRepository.find(newUserSessionId);
+        UserCurrentSession newUserCurrentSession = new UserCurrentSession();
         newUserCurrentSession.setUserID(newUserSession.getUserID());
         UserCurrentSession userCurrentSession = userCurrentSessionRepository.takeOrPutIfAbsent(newUserSession.getUserID(), newUserCurrentSession);
         String currentUserSessionID = userCurrentSession.getCurrentSessionID();
@@ -77,7 +76,7 @@ public class SharedBusinessMethodsBetweenServices {
         return removedUserSessionId;
     }
 
-    public static void updateUserCurrentSessionForLogout(UserCurrentSessionRepository<UserCurrentSession, Object> userCurrentSessionRepository,
+    public static void updateUserCurrentSessionForLogout(UserCurrentSessionRepository userCurrentSessionRepository,
                                                          Object userId) {
         UserCurrentSession userCurrentSession = userCurrentSessionRepository.take(userId);
         userCurrentSession.setCurrentSessionID(null);
@@ -89,12 +88,11 @@ public class SharedBusinessMethodsBetweenServices {
         return userBan != null;
     }
 
-    public static SharedLoginByOpenIDResult loginByOpenID(OpenIDUserBindRepository<OpenIDUserBind> openIDUserBindRepository,
+    public static SharedLoginByOpenIDResult loginByOpenID(OpenIDUserBindRepository openIDUserBindRepository,
                                                           UserIDGeneratorRepository userIDGeneratorRepository,
                                                           UserRepository<User, Object> userRepository,
                                                           String openID,
-                                                          User newUser,
-                                                          OpenIDUserBind newOpenIDUserBind) {
+                                                          User newUser) {
 
 
         SharedLoginByOpenIDResult result = new SharedLoginByOpenIDResult();
@@ -102,6 +100,7 @@ public class SharedBusinessMethodsBetweenServices {
         OpenIDUserBind openIDUserBind = openIDUserBindRepository.find(openID);
         if (openIDUserBind == null) {
             //需要创建新用户
+            OpenIDUserBind newOpenIDUserBind = new OpenIDUserBind();
             newOpenIDUserBind.setOpenID(openID);
             OpenIDUserBind existsOpenIDUserBind = openIDUserBindRepository.putIfAbsent(newOpenIDUserBind);
             if (existsOpenIDUserBind != null) {

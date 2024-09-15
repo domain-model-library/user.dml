@@ -6,5 +6,5 @@ import dml.user.entity.AutoLiftTime;
 /**
  * @author zheng chengdong
  */
-public interface AutoLiftTimeRepository<E extends AutoLiftTime, ID> extends CommonRepository<E, ID> {
+public interface AutoLiftTimeRepository extends CommonRepository<AutoLiftTime, Object> {
 }

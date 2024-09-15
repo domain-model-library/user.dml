@@ -3,10 +3,29 @@ package dml.user.entity;
 /**
  * @author zheng chengdong
  */
-public interface AutoLiftTime {
-    void setUserID(Object userID);
+public class AutoLiftTime {
 
-    Object getUserID();
+    private Object userID;
 
-    boolean timeToLift(long currentTime);
+    private long liftTime;
+
+    public boolean timeToLift(long currentTime) {
+        return currentTime >= liftTime;
+    }
+
+    public void setUserID(Object userID) {
+        this.userID = userID;
+    }
+
+    public Object getUserID() {
+        return userID;
+    }
+
+    public long getLiftTime() {
+        return liftTime;
+    }
+
+    public void setLiftTime(long liftTime) {
+        this.liftTime = liftTime;
+    }
 }

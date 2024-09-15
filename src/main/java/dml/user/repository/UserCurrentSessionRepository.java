@@ -6,5 +6,5 @@ import dml.user.entity.UserCurrentSession;
 /**
  * @author zheng chengdong
  */
-public interface UserCurrentSessionRepository<E extends UserCurrentSession, ID> extends CommonRepository<E, ID> {
+public interface UserCurrentSessionRepository extends CommonRepository<UserCurrentSession, Object> {
 }

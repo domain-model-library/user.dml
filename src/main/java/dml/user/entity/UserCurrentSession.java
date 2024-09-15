@@ -3,12 +3,23 @@ package dml.user.entity;
 /**
  * @author zheng chengdong
  */
-public interface UserCurrentSession {
-    void setUserID(Object userID);
+public class UserCurrentSession {
+    private Object userID;
+    private String currentSessionID;
 
-    Object getUserID();
+    public Object getUserID() {
+        return userID;
+    }
 
-    String getCurrentSessionID();
+    public void setUserID(Object userID) {
+        this.userID = userID;
+    }
 
-    void setCurrentSessionID(String currentSessionID);
+    public String getCurrentSessionID() {
+        return currentSessionID;
+    }
+
+    public void setCurrentSessionID(String currentSessionID) {
+        this.currentSessionID = currentSessionID;
+    }
 }

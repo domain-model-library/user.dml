@@ -2,9 +2,11 @@ import dml.common.repository.TestCommonRepository;
 import dml.common.repository.TestCommonSingletonRepository;
 import dml.id.entity.LongIdGenerator;
 import dml.id.entity.UUIDStyleRandomStringIdGenerator;
-import dml.keepalive.entity.AliveKeeperBase;
 import dml.keepalive.repository.AliveKeeperRepository;
-import dml.user.entity.*;
+import dml.user.entity.User;
+import dml.user.entity.UserAccountBase;
+import dml.user.entity.UserBan;
+import dml.user.entity.UserSession;
 import dml.user.repository.*;
 import dml.user.service.*;
 import dml.user.service.repositoryset.*;
@@ -31,10 +33,7 @@ public class Login {
                 openId1,
                 currentTime,
                 new TestUser(),
-                new TestSession(),
-                new TestSessionAliveKeeper(),
-                new TestOpenIdUserBind(),
-                new TestUserCurrentSession());
+                new TestSession());
         assertTrue(openidLoginResult1.isCreateNewUser());
         assertNotNull(openidLoginResult1.getNewUserSession().getUserID());
         assertNotNull(openidLoginResult1.getNewUserSession());
@@ -49,10 +48,7 @@ public class Login {
                 openId1,
                 currentTime,
                 new TestUser(),
-                new TestSession(),
-                new TestSessionAliveKeeper(),
-                new TestOpenIdUserBind(),
-                new TestUserCurrentSession());
+                new TestSession());
         assertFalse(openidLoginResult2.isCreateNewUser());
         assertEquals(openidLoginResult1.getNewUserSession().getId(), openidLoginResult2.getRemovedUserSessionID());
 
@@ -71,8 +67,8 @@ public class Login {
                 new TestUserBan()
         );
         UserBanAutoLiftService.setAutoLift(userBanAutoLiftServiceRepositorySet,
-                userID1
-                , new TestAutoLiftTime(currentTime + 60 * 1000L));
+                userID1,
+                currentTime + 60 * 1000L);
         Object userID4 = AuthService.auth(authServiceRepositorySet,
                 openidLoginResult1.getNewUserSession().getId());
         assertNull(userID4);
@@ -116,9 +112,7 @@ public class Login {
                 "account1",
                 "pass1",
                 currentTime,
-                new TestSession(),
-                new TestSessionAliveKeeper(),
-                new TestUserCurrentSession());
+                new TestSession());
         assertTrue(loginByAccountPasswordResult1.isLoginSuccess());
 
         Object userID1 = AuthService.auth(authServiceRepositorySet,
@@ -136,23 +130,19 @@ public class Login {
                 "account1",
                 "pass1",
                 currentTime,
-                new TestSession(),
-                new TestSessionAliveKeeper(),
-                new TestUserCurrentSession());
+                new TestSession());
         LoginByAccountPasswordResult accountPasswordKickLoginResult2 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
                 "pass1",
                 currentTime,
-                new TestSession(),
-                new TestSessionAliveKeeper(),
-                new TestUserCurrentSession());
+                new TestSession());
         Object userID3 = AuthService.auth(authServiceRepositorySet,
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
         assertNull(userID3);
 
     }
 
-    OpenIDUserBindRepository<OpenIDUserBind> openIdUserBindRepository = TestCommonRepository.instance(OpenIDUserBindRepository.class);
+    OpenIDUserBindRepository openIdUserBindRepository = TestCommonRepository.instance(OpenIDUserBindRepository.class);
     UserIDGeneratorRepository userIdGeneratorRepository = TestCommonSingletonRepository.instance(UserIDGeneratorRepository.class,
             new LongIdGenerator(1L) {
             });
@@ -373,66 +363,6 @@ public class Login {
 
     }
 
-    class TestSessionAliveKeeper extends AliveKeeperBase {
-        String sessionId;
-
-        @Override
-        public void setId(Object id) {
-            this.sessionId = (String) id;
-        }
-
-        @Override
-        public Object getId() {
-            return sessionId;
-        }
-    }
-
-    class TestOpenIdUserBind implements OpenIDUserBind {
-        String openID;
-        Object userID;
-
-        @Override
-        public void setOpenID(String openID) {
-            this.openID = openID;
-        }
-
-        @Override
-        public void setUserID(Object userID) {
-            this.userID = userID;
-        }
-
-        @Override
-        public Object getUserID() {
-            return userID;
-        }
-    }
-
-    class TestUserCurrentSession implements UserCurrentSession {
-        long userID;
-        String currentUserSessionID;
-
-        @Override
-        public void setUserID(Object userID) {
-            this.userID = (long) userID;
-        }
-
-        @Override
-        public Object getUserID() {
-            return userID;
-        }
-
-        @Override
-        public String getCurrentSessionID() {
-            return currentUserSessionID;
-        }
-
-        @Override
-        public void setCurrentSessionID(String currentSessionID) {
-            this.currentUserSessionID = currentSessionID;
-        }
-
-    }
-
     class TestUserBan implements UserBan {
         long userID;
 
@@ -440,26 +370,6 @@ public class Login {
         public void setUserID(Object userID) {
             this.userID = (long) userID;
         }
-    }
-
-    class TestAutoLiftTime extends AutoLiftTimeBase {
-        long userID;
-
-        public TestAutoLiftTime(long liftTime) {
-            this.liftTime = liftTime;
-        }
-
-        @Override
-        public void setUserID(Object userID) {
-            this.userID = (long) userID;
-        }
-
-        @Override
-        public Object getUserID() {
-            return userID;
-        }
-
-
     }
 
     class TestUserAccount extends UserAccountBase {

@@ -3,10 +3,23 @@ package dml.user.entity;
 /**
  * @author zheng chengdong
  */
-public interface OpenIDUserBind {
-    void setOpenID(String openID);
+public class OpenIDUserBind {
+    private String openID;
+    private Object userID;
 
-    void setUserID(Object userID);
+    public String getOpenID() {
+        return openID;
+    }
 
-    Object getUserID();
+    public void setOpenID(String openID) {
+        this.openID = openID;
+    }
+
+    public Object getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Object userID) {
+        this.userID = userID;
+    }
 }
