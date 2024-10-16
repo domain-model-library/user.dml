@@ -44,7 +44,7 @@ public class UserSessionCleanupService {
     public static boolean executeUserSessionCleanupTask(UserSessionCleanupServiceRepositorySet repositorySet,
                                                         String taskName, long currentTime, int sessionBatchSize,
                                                         long maxSegmentExecutionTime, long maxTimeToTaskReady,
-                                                        long sessionKeepAliveInterval) {
+                                                        long sessionKeepAliveInterval, List<String> sessionIdList) {
         ClearSessionTaskRepository clearSessionTaskRepository = repositorySet.getClearSessionTaskRepository();
         UserSessionRepository userSessionRepository = repositorySet.getUserSessionRepository();
 
@@ -53,7 +53,6 @@ public class UserSessionCleanupService {
             task = (ClearSessionTask) LargeScaleTaskService.createTask(getLargeScaleTaskServiceRepositorySet(repositorySet),
                     taskName, new ClearSessionTask(), currentTime);
             if (task != null) {
-                List<String> sessionIdList = userSessionRepository.getAllSessionId();
                 if (sessionIdList.isEmpty()) {
                     return false;
                 }
@@ -85,8 +84,8 @@ public class UserSessionCleanupService {
         if (segment == null) {
             return false;
         }
-        List<String> sessionIdList = segment.getSessionIdList();
-        for (String sessionId : sessionIdList) {
+        List<String> segmentSessionIdList = segment.getSessionIdList();
+        for (String sessionId : segmentSessionIdList) {
             UserSessionCleanupService.checkSessionDeadAndRemove(repositorySet,
                     sessionId, currentTime, sessionKeepAliveInterval);
         }
