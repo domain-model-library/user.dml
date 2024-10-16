@@ -46,7 +46,6 @@ public class UserSessionCleanupService {
                                                         long maxSegmentExecutionTime, long maxTimeToTaskReady,
                                                         long sessionKeepAliveInterval, List<String> sessionIdList) {
         ClearSessionTaskRepository clearSessionTaskRepository = repositorySet.getClearSessionTaskRepository();
-        UserSessionRepository userSessionRepository = repositorySet.getUserSessionRepository();
 
         ClearSessionTask task = clearSessionTaskRepository.find(taskName);
         if (task == null) {
