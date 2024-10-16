@@ -79,6 +79,11 @@ public class UserSessionCleanupService {
         TakeTaskSegmentToExecuteResult takeSegmentResult = LargeScaleTaskService.takeTaskSegmentToExecute(
                 getLargeScaleTaskServiceRepositorySet(repositorySet),
                 taskName, currentTime, maxSegmentExecutionTime, maxTimeToTaskReady);
+        if (takeSegmentResult.isTaskCompleted()) {
+            LargeScaleTaskService.removeTask(getLargeScaleTaskServiceRepositorySet(repositorySet),
+                    taskName);
+            return false;
+        }
         ClearSessionTakeSegment segment = (ClearSessionTakeSegment) takeSegmentResult.getTaskSegment();
         if (segment == null) {
             return false;
