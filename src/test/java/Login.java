@@ -290,6 +290,11 @@ public class Login {
         public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
         }
+
+        @Override
+        public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
+            return sessionAliveKeeperRepository;
+        }
     };
 
     UserBanServiceRepositorySet userBanServiceRepositorySet = new UserBanServiceRepositorySet() {
