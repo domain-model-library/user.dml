@@ -2,7 +2,6 @@ import dml.common.repository.TestCommonRepository;
 import dml.common.repository.TestCommonSingletonRepository;
 import dml.id.entity.LongIdGenerator;
 import dml.id.entity.UUIDStyleRandomStringIdGenerator;
-import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.User;
 import dml.user.entity.UserAccountBase;
 import dml.user.entity.UserBan;
@@ -149,7 +148,7 @@ public class Login {
     UserRepository userRepository = TestCommonRepository.instance(UserRepository.class);
     UserCurrentSessionRepository userCurrentSessionRepository = TestCommonRepository.instance(UserCurrentSessionRepository.class);
     UserSessionRepository userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
-    UserSessionAliveKeeperRepository sessionAliveKeeperRepository = TestCommonRepository.instance(UserSessionAliveKeeperRepository.class);
+    UserSessionAliveKeeperRepository userSessionAliveKeeperRepository = TestCommonRepository.instance(UserSessionAliveKeeperRepository.class);
     UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = TestCommonSingletonRepository.instance(UserSessionIDGeneratorRepository.class,
             new UUIDStyleRandomStringIdGenerator() {
             });
@@ -196,8 +195,8 @@ public class Login {
         }
 
         @Override
-        public UserSessionAliveKeeperRepository getSessionAliveKeeperRepository() {
-            return sessionAliveKeeperRepository;
+        public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
+            return userSessionAliveKeeperRepository;
         }
 
 
@@ -237,8 +236,8 @@ public class Login {
         }
 
         @Override
-        public UserSessionAliveKeeperRepository getSessionAliveKeeperRepository() {
-            return sessionAliveKeeperRepository;
+        public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
+            return userSessionAliveKeeperRepository;
         }
     };
 
@@ -279,8 +278,8 @@ public class Login {
         }
 
         @Override
-        public AliveKeeperRepository getSessionAliveKeeperRepository() {
-            return sessionAliveKeeperRepository;
+        public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
+            return userSessionAliveKeeperRepository;
         }
     };
 
@@ -293,7 +292,7 @@ public class Login {
 
         @Override
         public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
-            return sessionAliveKeeperRepository;
+            return userSessionAliveKeeperRepository;
         }
     };
 
@@ -314,8 +313,8 @@ public class Login {
         }
 
         @Override
-        public UserSessionAliveKeeperRepository getSessionAliveKeeperRepository() {
-            return sessionAliveKeeperRepository;
+        public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
+            return userSessionAliveKeeperRepository;
         }
     };
 

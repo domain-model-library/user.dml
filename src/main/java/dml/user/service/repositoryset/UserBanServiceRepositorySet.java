@@ -12,5 +12,5 @@ public interface UserBanServiceRepositorySet {
 
     UserSessionRepository getUserSessionRepository();
 
-    UserSessionAliveKeeperRepository getSessionAliveKeeperRepository();
+    UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository();
 }

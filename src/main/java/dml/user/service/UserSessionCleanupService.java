@@ -123,7 +123,7 @@ public class UserSessionCleanupService {
         return new AliveKeeperServiceRepositorySet() {
             @Override
             public AliveKeeperRepository getAliveKeeperRepository() {
-                return userSessionCleanupServiceRepositorySet.getSessionAliveKeeperRepository();
+                return userSessionCleanupServiceRepositorySet.getUserSessionAliveKeeperRepository();
             }
         };
     }

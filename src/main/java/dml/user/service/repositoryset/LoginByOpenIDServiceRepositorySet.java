@@ -18,5 +18,5 @@ public interface LoginByOpenIDServiceRepositorySet {
 
     UserCurrentSessionRepository getUserCurrentSessionRepository();
 
-    UserSessionAliveKeeperRepository getSessionAliveKeeperRepository();
+    UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository();
 }

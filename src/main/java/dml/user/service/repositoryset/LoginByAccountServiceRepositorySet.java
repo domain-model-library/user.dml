@@ -14,5 +14,5 @@ public interface LoginByAccountServiceRepositorySet {
 
     UserCurrentSessionRepository getUserCurrentSessionRepository();
 
-    UserSessionAliveKeeperRepository getSessionAliveKeeperRepository();
+    UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository();
 }

@@ -9,7 +9,7 @@ import dml.user.repository.UserSessionRepository;
 public interface UserSessionCleanupServiceRepositorySet {
     UserSessionRepository getUserSessionRepository();
 
-    UserSessionAliveKeeperRepository getSessionAliveKeeperRepository();
+    UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository();
 
     ClearSessionTaskRepository getClearSessionTaskRepository();
 

@@ -35,7 +35,7 @@ public class LoginByOpenIDWithBanSupportService {
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
         UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
-        AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
+        AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getUserSessionAliveKeeperRepository();
 
         LoginByOpenIDWithBanCheckResult result = new LoginByOpenIDWithBanCheckResult();
 
@@ -81,7 +81,7 @@ public class LoginByOpenIDWithBanSupportService {
 
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
         UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
-        UserSessionAliveKeeperRepository sessionAliveKeeperRepository = repositorySet.getSessionAliveKeeperRepository();
+        UserSessionAliveKeeperRepository sessionAliveKeeperRepository = repositorySet.getUserSessionAliveKeeperRepository();
 
         UserSession removedUserSession = SharedBusinessMethodsBetweenServices.logout(userSessionRepository,
                 sessionAliveKeeperRepository, token);
