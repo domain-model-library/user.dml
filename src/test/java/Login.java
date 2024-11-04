@@ -143,15 +143,13 @@ public class Login {
 
     OpenIDUserBindRepository openIdUserBindRepository = TestCommonRepository.instance(OpenIDUserBindRepository.class);
     UserIDGeneratorRepository userIdGeneratorRepository = TestCommonSingletonRepository.instance(UserIDGeneratorRepository.class,
-            new LongIdGenerator(1L) {
-            });
+            new LongIdGenerator(1L));
     UserRepository userRepository = TestCommonRepository.instance(UserRepository.class);
     UserCurrentSessionRepository userCurrentSessionRepository = TestCommonRepository.instance(UserCurrentSessionRepository.class);
     UserSessionRepository userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
     UserSessionAliveKeeperRepository userSessionAliveKeeperRepository = TestCommonRepository.instance(UserSessionAliveKeeperRepository.class);
     UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = TestCommonSingletonRepository.instance(UserSessionIDGeneratorRepository.class,
-            new UUIDStyleRandomStringIdGenerator() {
-            });
+            new UUIDStyleRandomStringIdGenerator());
     UserBanRepository userBanRepository = TestCommonRepository.instance(UserBanRepository.class);
     AutoLiftTimeRepository autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
     UserAccountRepository userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
