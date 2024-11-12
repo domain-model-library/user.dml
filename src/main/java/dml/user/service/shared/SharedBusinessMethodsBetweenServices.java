@@ -123,4 +123,32 @@ public class SharedBusinessMethodsBetweenServices {
         return result;
     }
 
+    public static UserSession checkSessionDeadAndRemove(UserSessionRepository<UserSession> userSessionRepository,
+                                                        UserSessionAliveKeeperRepository sessionAliveKeeperRepository,
+                                                        String sessionId,
+                                                        long currentTime,
+                                                        long sessionKeepAliveInterval) {
+
+        boolean alive = KeepAliveService.isAlive(getAliveKeeperServiceRepositorySet(sessionAliveKeeperRepository),
+                sessionId, currentTime, sessionKeepAliveInterval);
+        if (!alive) {
+            UserSession removedSession = userSessionRepository.remove(sessionId);
+            KeepAliveService.removeAliveKeeper(getAliveKeeperServiceRepositorySet(sessionAliveKeeperRepository)
+                    , sessionId);
+            return removedSession;
+        }
+        return null;
+
+    }
+
+    private static AliveKeeperServiceRepositorySet getAliveKeeperServiceRepositorySet(
+            UserSessionAliveKeeperRepository sessionAliveKeeperRepository) {
+        return new AliveKeeperServiceRepositorySet() {
+            @Override
+            public AliveKeeperRepository getAliveKeeperRepository() {
+                return sessionAliveKeeperRepository;
+            }
+        };
+    }
+
 }

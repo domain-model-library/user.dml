@@ -1,7 +1,9 @@
 import dml.common.repository.TestCommonRepository;
 import dml.common.repository.TestCommonSingletonRepository;
 import dml.id.entity.LongIdGenerator;
+import dml.id.entity.UUIDGenerator;
 import dml.id.entity.UUIDStyleRandomStringIdGenerator;
+import dml.largescaletaskmanagement.repository.LargeScaleTaskSegmentIDGeneratorRepository;
 import dml.user.entity.User;
 import dml.user.entity.UserAccountBase;
 import dml.user.entity.UserBan;
@@ -14,6 +16,8 @@ import dml.user.service.result.LoginByAccountPasswordResult;
 import dml.user.service.result.LoginByOpenIDResult;
 import dml.user.service.result.RegisterNewUserResult;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -141,6 +145,92 @@ public class Login {
 
     }
 
+    @Test
+    public void clearSession() {
+        long currentTime = System.currentTimeMillis();
+        long sessionKeepAliveInterval = 1000L;
+        int sessionBatchSize = 10;
+        long maxSegmentExecutionTime = 1000L;
+        long maxTimeToTaskReady = 1000L;
+        String openId1 = "1";
+        LoginByOpenIDResult openidLoginResult1 = LoginByOpenIDService.loginByOpenID(loginByOpenIDServiceRepositorySet,
+                openId1,
+                currentTime,
+                new TestUser(),
+                new TestSession());
+
+        //创建清理任务
+        boolean createTaskSuccess = UserSessionCleanupTaskService.createUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
+                "task1",
+                currentTime);
+        assertTrue(createTaskSuccess);
+
+        //给任务分配sessionId
+        UserSessionCleanupTaskService.addAllSessionIdToUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
+                "task1",
+                sessionBatchSize,
+                List.of(openidLoginResult1.getNewUserSession().getId()));
+
+        //取出任务段，准备执行
+        String segmentId = UserSessionCleanupTaskService.takeUserSessionCleanupTaskSegmentToExecute(userSessionCleanupTaskServiceRepositorySet,
+                "task1",
+                currentTime,
+                maxSegmentExecutionTime,
+                maxTimeToTaskReady);
+        assertNotNull(segmentId);
+
+        //执行任务段
+        UserSessionCleanupTaskService.executeUserSessionCleanupTaskSegment(userSessionCleanupTaskServiceRepositorySet,
+                segmentId,
+                currentTime,
+                sessionKeepAliveInterval);
+
+        //验证会话,会话停滞时间不够没有清理掉，验证成功
+        Object userID1 = AuthService.auth(authServiceRepositorySet,
+                openidLoginResult1.getNewUserSession().getId());
+        assertNotNull(userID1);
+
+        //再次取出任务段，目的是触发验证发现任务段都完成，任务完成，然后删除任务
+        segmentId = UserSessionCleanupTaskService.takeUserSessionCleanupTaskSegmentToExecute(userSessionCleanupTaskServiceRepositorySet,
+                "task1",
+                currentTime,
+                maxSegmentExecutionTime,
+                maxTimeToTaskReady);
+        assertNull(segmentId);
+
+        //这时候上一个任务已经执行完毕删除了，需要重新创建任务
+        createTaskSuccess = UserSessionCleanupTaskService.createUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
+                "task1",
+                currentTime);
+        assertTrue(createTaskSuccess);
+
+        //给任务分配sessionId
+        UserSessionCleanupTaskService.addAllSessionIdToUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
+                "task1",
+                sessionBatchSize,
+                List.of(openidLoginResult1.getNewUserSession().getId()));
+
+        //时间过去了，再次执行清理任务
+        currentTime += sessionKeepAliveInterval + 1;
+        segmentId = UserSessionCleanupTaskService.takeUserSessionCleanupTaskSegmentToExecute(userSessionCleanupTaskServiceRepositorySet,
+                "task1",
+                currentTime,
+                maxSegmentExecutionTime,
+                maxTimeToTaskReady);
+        assertNotNull(segmentId);
+
+        UserSessionCleanupTaskService.executeUserSessionCleanupTaskSegment(userSessionCleanupTaskServiceRepositorySet,
+                segmentId,
+                currentTime,
+                sessionKeepAliveInterval);
+
+        //验证会话,会话停滞时间够清理掉，验证失败
+        Object userID2 = AuthService.auth(authServiceRepositorySet,
+                openidLoginResult1.getNewUserSession().getId());
+        assertNull(userID2);
+
+    }
+
     OpenIDUserBindRepository openIdUserBindRepository = TestCommonRepository.instance(OpenIDUserBindRepository.class);
     UserIDGeneratorRepository userIdGeneratorRepository = TestCommonSingletonRepository.instance(UserIDGeneratorRepository.class,
             new LongIdGenerator(1L));
@@ -153,6 +243,10 @@ public class Login {
     UserBanRepository userBanRepository = TestCommonRepository.instance(UserBanRepository.class);
     AutoLiftTimeRepository autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
     UserAccountRepository userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
+    ClearSessionTaskRepository clearSessionTaskRepository = TestCommonRepository.instance(ClearSessionTaskRepository.class);
+    ClearSessionTaskSegmentRepository clearSessionTaskSegmentRepository = TestCommonRepository.instance(ClearSessionTaskSegmentRepository.class);
+    LargeScaleTaskSegmentIDGeneratorRepository clearSessionTaskSegmentIDGeneratorRepository = TestCommonSingletonRepository.instance(LargeScaleTaskSegmentIDGeneratorRepository.class,
+            new UUIDGenerator());
 
     UserRegistrationServiceRepositorySet userRegistrationServiceRepositorySet = new UserRegistrationServiceRepositorySet() {
         @Override
@@ -273,6 +367,45 @@ public class Login {
         @Override
         public UserCurrentSessionRepository getUserCurrentSessionRepository() {
             return userCurrentSessionRepository;
+        }
+
+        @Override
+        public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
+            return userSessionAliveKeeperRepository;
+        }
+    };
+
+    UserSessionCleanupServiceRepositorySet userSessionCleanupServiceRepositorySet = new UserSessionCleanupServiceRepositorySet() {
+        @Override
+        public UserSessionRepository getUserSessionRepository() {
+            return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
+            return userSessionAliveKeeperRepository;
+        }
+    };
+
+    UserSessionCleanupTaskServiceRepositorySet userSessionCleanupTaskServiceRepositorySet = new UserSessionCleanupTaskServiceRepositorySet() {
+        @Override
+        public ClearSessionTaskRepository getClearSessionTaskRepository() {
+            return clearSessionTaskRepository;
+        }
+
+        @Override
+        public ClearSessionTaskSegmentRepository getClearSessionTaskSegmentRepository() {
+            return clearSessionTaskSegmentRepository;
+        }
+
+        @Override
+        public LargeScaleTaskSegmentIDGeneratorRepository getClearSessionTaskSegmentIDGeneratorRepository() {
+            return clearSessionTaskSegmentIDGeneratorRepository;
+        }
+
+        @Override
+        public UserSessionRepository getUserSessionRepository() {
+            return userSessionRepository;
         }
 
         @Override

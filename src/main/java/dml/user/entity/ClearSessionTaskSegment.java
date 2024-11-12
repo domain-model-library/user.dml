@@ -4,7 +4,7 @@ import dml.largescaletaskmanagement.entity.LargeScaleTaskSegmentBase;
 
 import java.util.List;
 
-public class ClearSessionTakeSegment extends LargeScaleTaskSegmentBase {
+public class ClearSessionTaskSegment extends LargeScaleTaskSegmentBase {
 
     private String id;
     private List<String> sessionIdList;

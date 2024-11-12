@@ -1,7 +1,7 @@
 package dml.user.repository;
 
 import dml.largescaletaskmanagement.repository.LargeScaleTaskSegmentRepository;
-import dml.user.entity.ClearSessionTakeSegment;
+import dml.user.entity.ClearSessionTaskSegment;
 
-public interface ClearSessionTaskSegmentRepository extends LargeScaleTaskSegmentRepository<ClearSessionTakeSegment, Object> {
+public interface ClearSessionTaskSegmentRepository extends LargeScaleTaskSegmentRepository<ClearSessionTaskSegment, Object> {
 }
