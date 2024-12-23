@@ -1,5 +1,6 @@
 package dml.user.service;
 
+import dml.id.entity.IdGenerator;
 import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.OpenIDUserBind;
 import dml.user.entity.User;
@@ -80,6 +81,27 @@ public class LoginByOpenIDService {
                 removedUserSession.getUserID());
         return removedUserSession;
 
+    }
+
+    /**
+     * 注册（只注册不登录），可用于生成机器人用户。
+     */
+    public static User registerByOpenID(LoginByOpenIDServiceRepositorySet repositorySet,
+                                        String openID,
+                                        User newUser) {
+
+        OpenIDUserBindRepository openIDUserBindRepository = repositorySet.getOpenIDUserBindRepository();
+        UserIDGeneratorRepository userIDGeneratorRepository = repositorySet.getUserIDGeneratorRepository();
+        UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
+
+        OpenIDUserBind newOpenIDUserBind = new OpenIDUserBind();
+        newOpenIDUserBind.setOpenID(openID);
+        openIDUserBindRepository.put(newOpenIDUserBind);
+        IdGenerator<Object> userIDGenerator = userIDGeneratorRepository.take();
+        newUser.setId(userIDGenerator.generateId());
+        userRepository.put(newUser);
+        newOpenIDUserBind.setUserID(newUser.getId());
+        return newUser;
     }
 
 }
