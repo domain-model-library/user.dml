@@ -32,6 +32,17 @@ public class UserNicknameRandomGenerateService {
         NicknameForRandomAccess removedNickname = nicknameForRandomAccessRepository.remove(nicknameId);
         ReusableIntIdGenerator nicknameIdGenerator = nicknameForRandomAccessIDGeneratorRepository.take();
         nicknameIdGenerator.recycleId(nicknameId);
+
+        //优化缝隙
+        if (nicknameIdGenerator.countIdRanges() > 1) {
+            int toRemoveIdIdx = nicknameIdGenerator.countIds() - 1;
+            int toRemoveId = nicknameIdGenerator.queryId(toRemoveIdIdx);
+            NicknameForRandomAccess toMoveNickname = nicknameForRandomAccessRepository.remove(toRemoveId);
+            nicknameIdGenerator.recycleId(toRemoveId);
+            toMoveNickname.setId(nicknameIdGenerator.generateId());
+            nicknameForRandomAccessRepository.put(toMoveNickname);
+        }
+
         return removedNickname;
     }
 
