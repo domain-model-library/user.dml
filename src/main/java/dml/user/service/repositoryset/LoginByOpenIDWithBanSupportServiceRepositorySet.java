@@ -7,13 +7,9 @@ public interface LoginByOpenIDWithBanSupportServiceRepositorySet {
 
     UserBanRepository getUserBanRepository();
 
-    UserIDGeneratorRepository getUserIDGeneratorRepository();
-
     UserRepository getUserRepository();
 
     UserSessionRepository getUserSessionRepository();
-
-    UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository();
 
     UserCurrentSessionRepository getUserCurrentSessionRepository();
 

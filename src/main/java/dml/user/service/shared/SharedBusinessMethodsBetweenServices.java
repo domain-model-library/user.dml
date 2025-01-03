@@ -1,6 +1,5 @@
 package dml.user.service.shared;
 
-import dml.id.entity.IdGenerator;
 import dml.keepalive.repository.AliveKeeperRepository;
 import dml.keepalive.service.KeepAliveService;
 import dml.keepalive.service.repositoryset.AliveKeeperServiceRepositorySet;
@@ -26,14 +25,11 @@ public class SharedBusinessMethodsBetweenServices {
         return removedUserSession;
     }
 
-    public static UserSession createUserSession(UserSessionIDGeneratorRepository userSessionIdGeneratorRepository,
-                                                UserSessionRepository<UserSession> userSessionRepository,
+    public static UserSession createUserSession(UserSessionRepository<UserSession> userSessionRepository,
                                                 AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository,
                                                 UserSession newUserSession,
                                                 Object userID,
                                                 long currentTime) {
-        IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
-        newUserSession.setId(sessionIdGenerator.generateId());
         newUserSession.setUserID(userID);
         userSessionRepository.put(newUserSession);
 
@@ -88,7 +84,6 @@ public class SharedBusinessMethodsBetweenServices {
     }
 
     public static SharedLoginByOpenIDResult loginByOpenID(OpenIDUserBindRepository openIDUserBindRepository,
-                                                          UserIDGeneratorRepository userIDGeneratorRepository,
                                                           UserRepository<User, Object> userRepository,
                                                           String openID,
                                                           User newUser) {
@@ -107,8 +102,6 @@ public class SharedBusinessMethodsBetweenServices {
 
                 result.setCreateNewUser(false);
             } else {
-                IdGenerator<Object> userIDGenerator = userIDGeneratorRepository.take();
-                newUser.setId(userIDGenerator.generateId());
                 userRepository.put(newUser);
                 newOpenIDUserBind.setUserID(newUser.getId());
                 openIDUserBind = newOpenIDUserBind;

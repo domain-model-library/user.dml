@@ -8,13 +8,9 @@ import dml.user.repository.*;
 public interface LoginByOpenIDServiceRepositorySet {
     OpenIDUserBindRepository getOpenIDUserBindRepository();
 
-    UserIDGeneratorRepository getUserIDGeneratorRepository();
-
     UserRepository getUserRepository();
 
     UserSessionRepository getUserSessionRepository();
-
-    UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository();
 
     UserCurrentSessionRepository getUserCurrentSessionRepository();
 
