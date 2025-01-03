@@ -1,7 +1,6 @@
 package dml.user.service;
 
 import dml.largescaletaskmanagement.repository.LargeScaleTaskRepository;
-import dml.largescaletaskmanagement.repository.LargeScaleTaskSegmentIDGeneratorRepository;
 import dml.largescaletaskmanagement.repository.LargeScaleTaskSegmentRepository;
 import dml.largescaletaskmanagement.service.LargeScaleTaskService;
 import dml.largescaletaskmanagement.service.repositoryset.LargeScaleTaskServiceRepositorySet;
@@ -9,10 +8,7 @@ import dml.largescaletaskmanagement.service.result.TakeTaskSegmentToExecuteResul
 import dml.user.entity.ClearSessionTask;
 import dml.user.entity.ClearSessionTaskSegment;
 import dml.user.entity.UserSession;
-import dml.user.repository.ClearSessionTaskRepository;
-import dml.user.repository.ClearSessionTaskSegmentRepository;
-import dml.user.repository.UserSessionAliveKeeperRepository;
-import dml.user.repository.UserSessionRepository;
+import dml.user.repository.*;
 import dml.user.service.repositoryset.UserSessionCleanupTaskServiceRepositorySet;
 import dml.user.service.shared.SharedBusinessMethodsBetweenServices;
 
@@ -38,6 +34,7 @@ public class UserSessionCleanupTaskService {
 
     public static void addAllSessionIdToUserSessionCleanupTask(UserSessionCleanupTaskServiceRepositorySet repositorySet,
                                                                String taskName, int sessionBatchSize, List<String> sessionIdList) {
+        ClearSessionTaskSegmentIDGeneratorRepository clearSessionTaskSegmentIDGeneratorRepository = repositorySet.getClearSessionTaskSegmentIDGeneratorRepository();
         //分批次
         int size = sessionIdList.size();
         int batchCount = size / sessionBatchSize;
@@ -49,6 +46,7 @@ public class UserSessionCleanupTaskService {
             int end = Math.min((i + 1) * sessionBatchSize, size);
             List<String> subList = sessionIdList.subList(start, end);
             ClearSessionTaskSegment segment = new ClearSessionTaskSegment();
+            segment.setId(clearSessionTaskSegmentIDGeneratorRepository.take().generateId());
             segment.setSessionIdList(subList);
             LargeScaleTaskService.addTaskSegment(getLargeScaleTaskServiceRepositorySet(repositorySet),
                     taskName, segment);
@@ -110,10 +108,6 @@ public class UserSessionCleanupTaskService {
                 return userSessionCleanupTaskServiceRepositorySet.getClearSessionTaskSegmentRepository();
             }
 
-            @Override
-            public LargeScaleTaskSegmentIDGeneratorRepository getLargeScaleTaskSegmentIDGeneratorRepository() {
-                return userSessionCleanupTaskServiceRepositorySet.getClearSessionTaskSegmentIDGeneratorRepository();
-            }
         };
     }
 

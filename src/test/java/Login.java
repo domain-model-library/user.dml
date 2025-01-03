@@ -3,7 +3,6 @@ import dml.common.repository.TestCommonSingletonRepository;
 import dml.id.entity.LongIdGenerator;
 import dml.id.entity.UUIDGenerator;
 import dml.id.entity.UUIDStyleRandomStringIdGenerator;
-import dml.largescaletaskmanagement.repository.LargeScaleTaskSegmentIDGeneratorRepository;
 import dml.user.entity.User;
 import dml.user.entity.UserAccountBase;
 import dml.user.entity.UserBan;
@@ -243,7 +242,7 @@ public class Login {
     UserAccountRepository userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
     ClearSessionTaskRepository clearSessionTaskRepository = TestCommonRepository.instance(ClearSessionTaskRepository.class);
     ClearSessionTaskSegmentRepository clearSessionTaskSegmentRepository = TestCommonRepository.instance(ClearSessionTaskSegmentRepository.class);
-    LargeScaleTaskSegmentIDGeneratorRepository clearSessionTaskSegmentIDGeneratorRepository = TestCommonSingletonRepository.instance(LargeScaleTaskSegmentIDGeneratorRepository.class,
+    ClearSessionTaskSegmentIDGeneratorRepository clearSessionTaskSegmentIDGeneratorRepository = TestCommonSingletonRepository.instance(ClearSessionTaskSegmentIDGeneratorRepository.class,
             new UUIDGenerator());
 
     UserRegistrationServiceRepositorySet userRegistrationServiceRepositorySet = new UserRegistrationServiceRepositorySet() {
@@ -367,7 +366,7 @@ public class Login {
         }
 
         @Override
-        public LargeScaleTaskSegmentIDGeneratorRepository getClearSessionTaskSegmentIDGeneratorRepository() {
+        public ClearSessionTaskSegmentIDGeneratorRepository getClearSessionTaskSegmentIDGeneratorRepository() {
             return clearSessionTaskSegmentIDGeneratorRepository;
         }
 
