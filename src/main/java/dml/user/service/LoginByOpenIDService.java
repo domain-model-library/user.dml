@@ -1,5 +1,6 @@
 package dml.user.service;
 
+import dml.id.entity.IdGenerator;
 import dml.keepalive.repository.AliveKeeperRepository;
 import dml.user.entity.OpenIDUserBind;
 import dml.user.entity.User;
@@ -29,8 +30,10 @@ public class LoginByOpenIDService {
                                                     UserSession newUserSession) {
 
         OpenIDUserBindRepository openIDUserBindRepository = repositorySet.getOpenIDUserBindRepository();
+        UserIDGeneratorRepository userIDGeneratorRepository = repositorySet.getUserIDGeneratorRepository();
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
+        UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
         UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
         AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getUserSessionAliveKeeperRepository();
 
@@ -38,13 +41,14 @@ public class LoginByOpenIDService {
 
         SharedLoginByOpenIDResult sharedLoginByOpenIDResult = SharedBusinessMethodsBetweenServices.loginByOpenID(
                 openIDUserBindRepository,
+                userIDGeneratorRepository,
                 userRepository,
                 openID,
                 newUser);
         result.setCreateNewUser(sharedLoginByOpenIDResult.isCreateNewUser());
 
         OpenIDUserBind openIDUserBind = sharedLoginByOpenIDResult.getOpenIDUserBind();
-        result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(
+        result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIDGeneratorRepository,
                 userSessionRepository,
                 sessionAliveKeeperRepository,
                 newUserSession,
@@ -87,11 +91,14 @@ public class LoginByOpenIDService {
                                         User newUser) {
 
         OpenIDUserBindRepository openIDUserBindRepository = repositorySet.getOpenIDUserBindRepository();
+        UserIDGeneratorRepository userIDGeneratorRepository = repositorySet.getUserIDGeneratorRepository();
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
 
         OpenIDUserBind newOpenIDUserBind = new OpenIDUserBind();
         newOpenIDUserBind.setOpenID(openID);
         openIDUserBindRepository.put(newOpenIDUserBind);
+        IdGenerator<Object> userIDGenerator = userIDGeneratorRepository.take();
+        newUser.setId(userIDGenerator.generateId());
         userRepository.put(newUser);
         newOpenIDUserBind.setUserID(newUser.getId());
         return newUser;

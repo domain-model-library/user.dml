@@ -34,8 +34,8 @@ public class Login {
         LoginByOpenIDResult openidLoginResult1 = LoginByOpenIDService.loginByOpenID(loginByOpenIDServiceRepositorySet,
                 openId1,
                 currentTime,
-                new TestUser(userIdGenerator.generateId()),
-                new TestSession(userSessionIdGenerator.generateId()));
+                new TestUser(),
+                new TestSession());
         assertTrue(openidLoginResult1.isCreateNewUser());
         assertNotNull(openidLoginResult1.getNewUserSession().getUserID());
         assertNotNull(openidLoginResult1.getNewUserSession());
@@ -49,8 +49,8 @@ public class Login {
         LoginByOpenIDResult openidLoginResult2 = LoginByOpenIDService.loginByOpenID(loginByOpenIDServiceRepositorySet,
                 openId1,
                 currentTime,
-                new TestUser(userIdGenerator.generateId()),
-                new TestSession(userSessionIdGenerator.generateId()));
+                new TestUser(),
+                new TestSession());
         assertFalse(openidLoginResult2.isCreateNewUser());
         assertEquals(openidLoginResult1.getNewUserSession().getId(), openidLoginResult2.getRemovedUserSessionID());
 
@@ -107,14 +107,14 @@ public class Login {
         RegisterNewUserResult registerNewUserResult1 = UserRegistrationService
                 .registerNewUser(userRegistrationServiceRepositorySet, "account1", "pass1",
                         new TestUserAccount("account1"),
-                        new TestUser(userIdGenerator.generateId()));
+                        new TestUser());
         assertFalse(registerNewUserResult1.isAccountExists());
 
         LoginByAccountPasswordResult loginByAccountPasswordResult1 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
                 "pass1",
                 currentTime,
-                new TestSession(userSessionIdGenerator.generateId()));
+                new TestSession());
         assertTrue(loginByAccountPasswordResult1.isLoginSuccess());
 
         Object userID1 = AuthService.auth(authServiceRepositorySet,
@@ -132,12 +132,12 @@ public class Login {
                 "account1",
                 "pass1",
                 currentTime,
-                new TestSession(userSessionIdGenerator.generateId()));
+                new TestSession());
         LoginByAccountPasswordResult accountPasswordKickLoginResult2 = LoginByAccountService.loginByAccountPassword(loginByAccountServiceRepositorySet,
                 "account1",
                 "pass1",
                 currentTime,
-                new TestSession(userSessionIdGenerator.generateId()));
+                new TestSession());
         Object userID3 = AuthService.auth(authServiceRepositorySet,
                 accountPasswordKickLoginResult1.getNewUserSession().getId());
         assertNull(userID3);
@@ -155,8 +155,8 @@ public class Login {
         LoginByOpenIDResult openidLoginResult1 = LoginByOpenIDService.loginByOpenID(loginByOpenIDServiceRepositorySet,
                 openId1,
                 currentTime,
-                new TestUser(userIdGenerator.generateId()),
-                new TestSession(userSessionIdGenerator.generateId()));
+                new TestUser(),
+                new TestSession());
 
         //创建清理任务
         boolean createTaskSuccess = UserSessionCleanupTaskService.createUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
@@ -231,12 +231,14 @@ public class Login {
     }
 
     OpenIDUserBindRepository openIdUserBindRepository = TestCommonRepository.instance(OpenIDUserBindRepository.class);
-    LongIdGenerator userIdGenerator = new LongIdGenerator(1L);
+    UserIDGeneratorRepository userIdGeneratorRepository = TestCommonSingletonRepository.instance(UserIDGeneratorRepository.class,
+            new LongIdGenerator(1L));
     UserRepository userRepository = TestCommonRepository.instance(UserRepository.class);
     UserCurrentSessionRepository userCurrentSessionRepository = TestCommonRepository.instance(UserCurrentSessionRepository.class);
     UserSessionRepository userSessionRepository = TestCommonRepository.instance(UserSessionRepository.class);
     UserSessionAliveKeeperRepository userSessionAliveKeeperRepository = TestCommonRepository.instance(UserSessionAliveKeeperRepository.class);
-    UUIDStyleRandomStringIdGenerator userSessionIdGenerator = new UUIDStyleRandomStringIdGenerator();
+    UserSessionIDGeneratorRepository userSessionIdGeneratorRepository = TestCommonSingletonRepository.instance(UserSessionIDGeneratorRepository.class,
+            new UUIDStyleRandomStringIdGenerator());
     UserBanRepository userBanRepository = TestCommonRepository.instance(UserBanRepository.class);
     AutoLiftTimeRepository autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
     UserAccountRepository userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
@@ -249,6 +251,11 @@ public class Login {
         @Override
         public UserAccountRepository getUserAccountRepository() {
             return userAccountRepository;
+        }
+
+        @Override
+        public UserIDGeneratorRepository getUserIdGeneratorRepository() {
+            return userIdGeneratorRepository;
         }
 
         @Override
@@ -266,6 +273,11 @@ public class Login {
         @Override
         public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionIDGeneratorRepository getUserSessionIdGeneratorRepository() {
+            return userSessionIdGeneratorRepository;
         }
 
         @Override
@@ -290,6 +302,11 @@ public class Login {
         }
 
         @Override
+        public UserIDGeneratorRepository getUserIDGeneratorRepository() {
+            return userIdGeneratorRepository;
+        }
+
+        @Override
         public UserRepository getUserRepository() {
             return userRepository;
         }
@@ -297,6 +314,11 @@ public class Login {
         @Override
         public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository() {
+            return userSessionIdGeneratorRepository;
         }
 
         @Override
@@ -322,6 +344,11 @@ public class Login {
         }
 
         @Override
+        public UserIDGeneratorRepository getUserIDGeneratorRepository() {
+            return userIdGeneratorRepository;
+        }
+
+        @Override
         public UserRepository getUserRepository() {
             return userRepository;
         }
@@ -329,6 +356,11 @@ public class Login {
         @Override
         public UserSessionRepository getUserSessionRepository() {
             return userSessionRepository;
+        }
+
+        @Override
+        public UserSessionIDGeneratorRepository getUserSessionIDGeneratorRepository() {
+            return userSessionIdGeneratorRepository;
         }
 
         @Override
@@ -427,9 +459,6 @@ public class Login {
 
         long id;
 
-        TestUser(long id) {
-            this.id = id;
-        }
 
         @Override
         public void setId(Object id) {
@@ -445,10 +474,6 @@ public class Login {
     class TestSession implements UserSession {
         String id;
         Object userID;
-
-        TestSession(String id) {
-            this.id = id;
-        }
 
         @Override
         public String getId() {

@@ -30,8 +30,10 @@ public class LoginByOpenIDWithBanSupportService {
 
         OpenIDUserBindRepository openIDUserBindRepository = repositorySet.getOpenIDUserBindRepository();
         UserBanRepository<UserBan, Object> userBanRepository = repositorySet.getUserBanRepository();
+        UserIDGeneratorRepository userIDGeneratorRepository = repositorySet.getUserIDGeneratorRepository();
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
+        UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
         UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
         AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getUserSessionAliveKeeperRepository();
 
@@ -48,13 +50,14 @@ public class LoginByOpenIDWithBanSupportService {
 
         SharedLoginByOpenIDResult sharedLoginByOpenIDResult = SharedBusinessMethodsBetweenServices.loginByOpenID(
                 openIDUserBindRepository,
+                userIDGeneratorRepository,
                 userRepository,
                 openID,
                 newUser);
         result.setCreateNewUser(sharedLoginByOpenIDResult.isCreateNewUser());
 
         OpenIDUserBind openIDUserBind = sharedLoginByOpenIDResult.getOpenIDUserBind();
-        result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(
+        result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIDGeneratorRepository,
                 userSessionRepository,
                 sessionAliveKeeperRepository,
                 newUserSession,

@@ -1,9 +1,6 @@
 package dml.user.service.repositoryset;
 
-import dml.user.repository.UserAccountRepository;
-import dml.user.repository.UserCurrentSessionRepository;
-import dml.user.repository.UserSessionAliveKeeperRepository;
-import dml.user.repository.UserSessionRepository;
+import dml.user.repository.*;
 
 /**
  * @author zheng chengdong
@@ -12,6 +9,8 @@ public interface LoginByAccountServiceRepositorySet {
     UserAccountRepository getUserAccountRepository();
 
     UserSessionRepository getUserSessionRepository();
+
+    UserSessionIDGeneratorRepository getUserSessionIdGeneratorRepository();
 
     UserCurrentSessionRepository getUserCurrentSessionRepository();
 
