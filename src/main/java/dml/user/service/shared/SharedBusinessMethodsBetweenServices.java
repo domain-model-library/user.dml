@@ -26,14 +26,11 @@ public class SharedBusinessMethodsBetweenServices {
         return removedUserSession;
     }
 
-    public static UserSession createUserSession(UserSessionIDGeneratorRepository userSessionIdGeneratorRepository,
-                                                UserSessionRepository<UserSession> userSessionRepository,
+    public static UserSession createUserSession(UserSessionRepository<UserSession> userSessionRepository,
                                                 AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository,
                                                 UserSession newUserSession,
                                                 Object userID,
                                                 long currentTime) {
-        IdGenerator<String> sessionIdGenerator = userSessionIdGeneratorRepository.take();
-        newUserSession.setId(sessionIdGenerator.generateId());
         newUserSession.setUserID(userID);
         userSessionRepository.put(newUserSession);
 

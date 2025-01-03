@@ -33,7 +33,6 @@ public class LoginByOpenIDService {
         UserIDGeneratorRepository userIDGeneratorRepository = repositorySet.getUserIDGeneratorRepository();
         UserRepository<User, Object> userRepository = repositorySet.getUserRepository();
         UserSessionRepository<UserSession> userSessionRepository = repositorySet.getUserSessionRepository();
-        UserSessionIDGeneratorRepository userSessionIDGeneratorRepository = repositorySet.getUserSessionIDGeneratorRepository();
         UserCurrentSessionRepository userCurrentSessionRepository = repositorySet.getUserCurrentSessionRepository();
         AliveKeeperRepository<UserSessionAliveKeeper, String> sessionAliveKeeperRepository = repositorySet.getUserSessionAliveKeeperRepository();
 
@@ -48,7 +47,7 @@ public class LoginByOpenIDService {
         result.setCreateNewUser(sharedLoginByOpenIDResult.isCreateNewUser());
 
         OpenIDUserBind openIDUserBind = sharedLoginByOpenIDResult.getOpenIDUserBind();
-        result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(userSessionIDGeneratorRepository,
+        result.setNewUserSession(SharedBusinessMethodsBetweenServices.createUserSession(
                 userSessionRepository,
                 sessionAliveKeeperRepository,
                 newUserSession,
