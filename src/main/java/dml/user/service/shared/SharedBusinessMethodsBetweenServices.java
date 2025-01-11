@@ -96,15 +96,17 @@ public class SharedBusinessMethodsBetweenServices {
         OpenIDUserBind openIDUserBind = openIDUserBindRepository.find(openID);
         if (openIDUserBind == null) {
             //需要创建新用户
+            //先抢userId，大概率是要新建用户了（除非同一个openId并发）
+            //如果先存bind，后抢userId，可能由于抢不到userId而过程结束，那么就存了一个无效的bind了
             OpenIDUserBind newOpenIDUserBind = new OpenIDUserBind();
             newOpenIDUserBind.setOpenID(openID);
+            IdGenerator<Object> userIDGenerator = userIDGeneratorRepository.take();
             OpenIDUserBind existsOpenIDUserBind = openIDUserBindRepository.putIfAbsent(newOpenIDUserBind);
             if (existsOpenIDUserBind != null) {
                 openIDUserBind = existsOpenIDUserBind;
 
                 result.setCreateNewUser(false);
             } else {
-                IdGenerator<Object> userIDGenerator = userIDGeneratorRepository.take();
                 newUser.setId(userIDGenerator.generateId());
                 userRepository.put(newUser);
                 newOpenIDUserBind.setUserID(newUser.getId());
