@@ -12,6 +12,7 @@ import dml.user.repository.*;
 import dml.user.service.repositoryset.UserSessionCleanupTaskServiceRepositorySet;
 import dml.user.service.shared.SharedBusinessMethodsBetweenServices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserSessionCleanupTaskService {
@@ -44,7 +45,7 @@ public class UserSessionCleanupTaskService {
         for (int i = 0; i < batchCount; i++) {
             int start = i * sessionBatchSize;
             int end = Math.min((i + 1) * sessionBatchSize, size);
-            List<String> subList = sessionIdList.subList(start, end);
+            List<String> subList = new ArrayList<>(sessionIdList.subList(start, end));
             ClearSessionTaskSegment segment = new ClearSessionTaskSegment();
             segment.setId(clearSessionTaskSegmentIDGeneratorRepository.take().generateId());
             segment.setSessionIdList(subList);
