@@ -160,19 +160,16 @@ public class Login {
 
         //创建清理任务
         boolean createTaskSuccess = UserSessionCleanupTaskService.createUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
-                "task1",
                 currentTime);
         assertTrue(createTaskSuccess);
 
         //给任务分配sessionId
         UserSessionCleanupTaskService.addAllSessionIdToUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
-                "task1",
                 sessionBatchSize,
                 List.of(openidLoginResult1.getNewUserSession().getId()));
 
         //取出任务段，准备执行
         String segmentId = UserSessionCleanupTaskService.takeUserSessionCleanupTaskSegmentToExecute(userSessionCleanupTaskServiceRepositorySet,
-                "task1",
                 currentTime,
                 maxSegmentExecutionTime,
                 maxTimeToTaskReady);
@@ -191,7 +188,6 @@ public class Login {
 
         //再次取出任务段，目的是触发验证发现任务段都完成，任务完成，然后删除任务
         segmentId = UserSessionCleanupTaskService.takeUserSessionCleanupTaskSegmentToExecute(userSessionCleanupTaskServiceRepositorySet,
-                "task1",
                 currentTime,
                 maxSegmentExecutionTime,
                 maxTimeToTaskReady);
@@ -199,20 +195,17 @@ public class Login {
 
         //这时候上一个任务已经执行完毕删除了，需要重新创建任务
         createTaskSuccess = UserSessionCleanupTaskService.createUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
-                "task1",
                 currentTime);
         assertTrue(createTaskSuccess);
 
         //给任务分配sessionId
         UserSessionCleanupTaskService.addAllSessionIdToUserSessionCleanupTask(userSessionCleanupTaskServiceRepositorySet,
-                "task1",
                 sessionBatchSize,
                 List.of(openidLoginResult1.getNewUserSession().getId()));
 
         //时间过去了，再次执行清理任务
         currentTime += sessionKeepAliveInterval + 1;
         segmentId = UserSessionCleanupTaskService.takeUserSessionCleanupTaskSegmentToExecute(userSessionCleanupTaskServiceRepositorySet,
-                "task1",
                 currentTime,
                 maxSegmentExecutionTime,
                 maxTimeToTaskReady);
@@ -240,7 +233,7 @@ public class Login {
     UserBanRepository userBanRepository = TestCommonRepository.instance(UserBanRepository.class);
     AutoLiftTimeRepository autoLiftTimeRepository = TestCommonRepository.instance(AutoLiftTimeRepository.class);
     UserAccountRepository userAccountRepository = TestCommonRepository.instance(UserAccountRepository.class);
-    ClearSessionTaskRepository clearSessionTaskRepository = TestCommonRepository.instance(ClearSessionTaskRepository.class);
+    ClearSessionTaskRepository clearSessionTaskRepository = TestCommonSingletonRepository.instance(ClearSessionTaskRepository.class);
     ClearSessionTaskSegmentRepository clearSessionTaskSegmentRepository = TestCommonRepository.instance(ClearSessionTaskSegmentRepository.class);
     ClearSessionTaskSegmentIDGeneratorRepository clearSessionTaskSegmentIDGeneratorRepository = TestCommonSingletonRepository.instance(ClearSessionTaskSegmentIDGeneratorRepository.class,
             new UUIDGenerator());

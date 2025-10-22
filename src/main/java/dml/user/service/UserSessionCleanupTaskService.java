@@ -1,9 +1,9 @@
 package dml.user.service;
 
-import dml.largescaletaskmanagement.repository.LargeScaleTaskRepository;
+import dml.largescaletaskmanagement.repository.LargeScaleSingletonTaskRepository;
 import dml.largescaletaskmanagement.repository.LargeScaleTaskSegmentRepository;
-import dml.largescaletaskmanagement.service.LargeScaleTaskService;
-import dml.largescaletaskmanagement.service.repositoryset.LargeScaleTaskServiceRepositorySet;
+import dml.largescaletaskmanagement.service.LargeScaleSingletonTaskService;
+import dml.largescaletaskmanagement.service.repositoryset.LargeScaleSingletonTaskServiceRepositorySet;
 import dml.largescaletaskmanagement.service.result.TakeTaskSegmentToExecuteResult;
 import dml.user.entity.ClearSessionTask;
 import dml.user.entity.ClearSessionTaskSegment;
@@ -21,20 +21,20 @@ public class UserSessionCleanupTaskService {
      * @return 是否成功创建。如果任务已存在，那不会创建，返回false
      */
     public static boolean createUserSessionCleanupTask(UserSessionCleanupTaskServiceRepositorySet repositorySet,
-                                                       String taskName, long currentTime) {
+                                                       long currentTime) {
         ClearSessionTaskRepository clearSessionTaskRepository = repositorySet.getClearSessionTaskRepository();
 
-        ClearSessionTask task = clearSessionTaskRepository.find(taskName);
+        ClearSessionTask task = clearSessionTaskRepository.get();
         if (task == null) {
-            task = (ClearSessionTask) LargeScaleTaskService.createTask(getLargeScaleTaskServiceRepositorySet(repositorySet),
-                    taskName, new ClearSessionTask(), currentTime);
+            task = (ClearSessionTask) LargeScaleSingletonTaskService.createTask(getLargeScaleSingletonTaskServiceRepositorySet(repositorySet),
+                    new ClearSessionTask(), currentTime);
             return task != null;
         }
         return false;
     }
 
     public static void addAllSessionIdToUserSessionCleanupTask(UserSessionCleanupTaskServiceRepositorySet repositorySet,
-                                                               String taskName, int sessionBatchSize, List<String> sessionIdList) {
+                                                               int sessionBatchSize, List<String> sessionIdList) {
         ClearSessionTaskSegmentIDGeneratorRepository clearSessionTaskSegmentIDGeneratorRepository = repositorySet.getClearSessionTaskSegmentIDGeneratorRepository();
         //分批次
         int size = sessionIdList.size();
@@ -49,23 +49,21 @@ public class UserSessionCleanupTaskService {
             ClearSessionTaskSegment segment = new ClearSessionTaskSegment();
             segment.setId(clearSessionTaskSegmentIDGeneratorRepository.take().generateId());
             segment.setSessionIdList(subList);
-            LargeScaleTaskService.addTaskSegment(getLargeScaleTaskServiceRepositorySet(repositorySet),
-                    taskName, segment);
+            LargeScaleSingletonTaskService.addTaskSegment(getLargeScaleSingletonTaskServiceRepositorySet(repositorySet),
+                    segment);
         }
-        LargeScaleTaskService.setTaskReadyToProcess(getLargeScaleTaskServiceRepositorySet(repositorySet),
-                taskName);
+        LargeScaleSingletonTaskService.setTaskReadyToProcess(getLargeScaleSingletonTaskServiceRepositorySet(repositorySet));
     }
 
     public static String takeUserSessionCleanupTaskSegmentToExecute(UserSessionCleanupTaskServiceRepositorySet repositorySet,
-                                                                    String taskName, long currentTime,
+                                                                    long currentTime,
                                                                     long maxSegmentExecutionTime,
                                                                     long maxTimeToTaskReady) {
-        TakeTaskSegmentToExecuteResult takeSegmentResult = LargeScaleTaskService.takeTaskSegmentToExecute(
-                getLargeScaleTaskServiceRepositorySet(repositorySet),
-                taskName, currentTime, maxSegmentExecutionTime, maxTimeToTaskReady);
+        TakeTaskSegmentToExecuteResult takeSegmentResult = LargeScaleSingletonTaskService.takeTaskSegmentToExecute(
+                getLargeScaleSingletonTaskServiceRepositorySet(repositorySet),
+                currentTime, maxSegmentExecutionTime, maxTimeToTaskReady);
         if (takeSegmentResult.isTaskCompleted()) {
-            LargeScaleTaskService.removeTask(getLargeScaleTaskServiceRepositorySet(repositorySet),
-                    taskName);
+            LargeScaleSingletonTaskService.removeTask(getLargeScaleSingletonTaskServiceRepositorySet(repositorySet));
             return null;
         }
         if (takeSegmentResult.getTaskSegment() == null) {
@@ -92,15 +90,15 @@ public class UserSessionCleanupTaskService {
             SharedBusinessMethodsBetweenServices.checkSessionDeadAndRemove(userSessionRepository, sessionAliveKeeperRepository,
                     sessionId, currentTime, sessionKeepAliveInterval);
         }
-        LargeScaleTaskService.completeTaskSegment(getLargeScaleTaskServiceRepositorySet(repositorySet),
+        LargeScaleSingletonTaskService.completeTaskSegment(getLargeScaleSingletonTaskServiceRepositorySet(repositorySet),
                 segment.getId());
     }
 
-    private static LargeScaleTaskServiceRepositorySet getLargeScaleTaskServiceRepositorySet(
+    private static LargeScaleSingletonTaskServiceRepositorySet getLargeScaleSingletonTaskServiceRepositorySet(
             UserSessionCleanupTaskServiceRepositorySet userSessionCleanupTaskServiceRepositorySet) {
-        return new LargeScaleTaskServiceRepositorySet() {
+        return new LargeScaleSingletonTaskServiceRepositorySet() {
             @Override
-            public LargeScaleTaskRepository getLargeScaleTaskRepository() {
+            public LargeScaleSingletonTaskRepository getLargeScaleSingletonTaskRepository() {
                 return userSessionCleanupTaskServiceRepositorySet.getClearSessionTaskRepository();
             }
 

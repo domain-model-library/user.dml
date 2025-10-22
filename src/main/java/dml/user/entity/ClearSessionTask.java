@@ -1,17 +1,6 @@
 package dml.user.entity;
 
-import dml.largescaletaskmanagement.entity.LargeScaleTaskBase;
+import dml.largescaletaskmanagement.entity.LargeScaleSingletonTaskBase;
 
-public class ClearSessionTask extends LargeScaleTaskBase {
-    private String taskName;
-
-    @Override
-    public void setName(String name) {
-        this.taskName = name;
-    }
-
-    @Override
-    public String getName() {
-        return taskName;
-    }
+public class ClearSessionTask extends LargeScaleSingletonTaskBase {
 }
