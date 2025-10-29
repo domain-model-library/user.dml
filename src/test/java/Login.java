@@ -2,6 +2,7 @@ import dml.common.repository.TestCommonRepository;
 import dml.common.repository.TestCommonSingletonRepository;
 import dml.id.entity.LongIdGenerator;
 import dml.id.entity.UUIDGenerator;
+import dml.largescaletaskmanagement.entity.CompleteSegmentIfTimeout;
 import dml.user.entity.User;
 import dml.user.entity.UserAccountBase;
 import dml.user.entity.UserBan;
@@ -237,6 +238,8 @@ public class Login {
     ClearSessionTaskSegmentRepository clearSessionTaskSegmentRepository = TestCommonRepository.instance(ClearSessionTaskSegmentRepository.class);
     ClearSessionTaskSegmentIDGeneratorRepository clearSessionTaskSegmentIDGeneratorRepository = TestCommonSingletonRepository.instance(ClearSessionTaskSegmentIDGeneratorRepository.class,
             new UUIDGenerator());
+    ClearSessionTaskSegmentTimeoutStrategyRepository clearSessionTaskSegmentTimeoutStrategyRepository =
+            TestCommonSingletonRepository.instance(ClearSessionTaskSegmentTimeoutStrategyRepository.class, new CompleteSegmentIfTimeout());
 
     UserRegistrationServiceRepositorySet userRegistrationServiceRepositorySet = new UserRegistrationServiceRepositorySet() {
         @Override
@@ -386,6 +389,11 @@ public class Login {
         @Override
         public UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository() {
             return userSessionAliveKeeperRepository;
+        }
+
+        @Override
+        public ClearSessionTaskSegmentTimeoutStrategyRepository getClearSessionTaskSegmentTimeoutStrategyRepository() {
+            return clearSessionTaskSegmentTimeoutStrategyRepository;
         }
     };
 

@@ -12,4 +12,6 @@ public interface UserSessionCleanupTaskServiceRepositorySet {
     UserSessionRepository getUserSessionRepository();
 
     UserSessionAliveKeeperRepository getUserSessionAliveKeeperRepository();
+
+    ClearSessionTaskSegmentTimeoutStrategyRepository getClearSessionTaskSegmentTimeoutStrategyRepository();
 }

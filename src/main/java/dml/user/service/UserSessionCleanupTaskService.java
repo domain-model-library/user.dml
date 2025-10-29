@@ -2,6 +2,7 @@ package dml.user.service;
 
 import dml.largescaletaskmanagement.repository.LargeScaleSingletonTaskRepository;
 import dml.largescaletaskmanagement.repository.LargeScaleTaskSegmentRepository;
+import dml.largescaletaskmanagement.repository.SegmentProcessingTimeoutHandlingStrategyRepository;
 import dml.largescaletaskmanagement.service.LargeScaleSingletonTaskService;
 import dml.largescaletaskmanagement.service.repositoryset.LargeScaleSingletonTaskServiceRepositorySet;
 import dml.largescaletaskmanagement.service.result.TakeTaskSegmentToExecuteResult;
@@ -105,6 +106,11 @@ public class UserSessionCleanupTaskService {
             @Override
             public LargeScaleTaskSegmentRepository getLargeScaleTaskSegmentRepository() {
                 return userSessionCleanupTaskServiceRepositorySet.getClearSessionTaskSegmentRepository();
+            }
+
+            @Override
+            public SegmentProcessingTimeoutHandlingStrategyRepository getSegmentProcessingTimeoutHandlingStrategyRepository() {
+                return userSessionCleanupTaskServiceRepositorySet.getClearSessionTaskSegmentTimeoutStrategyRepository();
             }
 
         };
